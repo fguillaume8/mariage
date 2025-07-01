@@ -3,18 +3,20 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from './lib/supabaseClient'
+import { Invite } from './lib/types'
+
 
 export default function Home() {
   const [nom, setNom] = useState('')
   const [prenom, setPrenom] = useState('')
   const [erreur, setErreur] = useState('')
   const [showModal, setShowModal] = useState(false)
-  const [groupMembers, setGroupMembers] = useState<any[]>([])
+  const [groupMembers, setGroupMembers] = useState<Invite[]>([])
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const router = useRouter()
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault()
     setErreur('')
 
     // Cherche l’invité
