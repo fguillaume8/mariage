@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { supabase } from '../lib/supabaseClient'
 
@@ -15,8 +15,10 @@ type Invite = {
 
 export default function RsvpPage() {
   const searchParams = useSearchParams()
-  const idsParam = searchParams.get('ids')
-  const ids = idsParam ? idsParam.split(',') : []
+  const ids = useMemo(() => {
+    const idsParam = searchParams.get('ids')
+    return idsParam ? idsParam.split(',') : []
+  }, [searchParams])
 
   const [invites, setInvites] = useState<Invite[]>([])
   const [loading, setLoading] = useState(true)
@@ -51,7 +53,7 @@ export default function RsvpPage() {
   }, [ids])
 
   // Mise à jour des champs localement dans le state
-  const handleChange = (id: string, field: keyof Invite, value: any) => {
+  const handleChange = (id: string, field: keyof Invite, value: string | boolean | null) => {
     setInvites((prev) =>
       prev.map((inv) => (inv.id === id ? { ...inv, [field]: value } : inv))
     )
