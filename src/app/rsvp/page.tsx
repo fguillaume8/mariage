@@ -53,11 +53,17 @@ export default function RsvpPage() {
   }, [ids])
 
   // Mise à jour des champs localement dans le state
-  const handleChange = (id: string, field: keyof Invite, value: string | boolean | null) => {
+
+  const handleChange = (
+    id: string,
+    field: keyof Invite,
+    value: string | boolean | null
+  ) => {
     setInvites((prev) =>
       prev.map((inv) => (inv.id === id ? { ...inv, [field]: value } : inv))
     )
   }
+  
 
   // Sauvegarder en base
   const handleSave = async () => {
