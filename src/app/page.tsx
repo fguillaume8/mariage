@@ -1,103 +1,141 @@
-import Image from "next/image";
+'use client'
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { supabase } from './lib/supabaseClient'
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [nom, setNom] = useState('')
+  const [prenom, setPrenom] = useState('')
+  const [erreur, setErreur] = useState('')
+  const [showModal, setShowModal] = useState(false)
+  const [groupMembers, setGroupMembers] = useState<any[]>([])
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const router = useRouter()
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setErreur('')
+
+    // Cherche l’invité
+    const { data: inviteData, error: inviteError } = await supabase
+      .from('invites')
+      .select()
+      .ilike('nom', nom.trim())
+      .ilike('prenom', prenom.trim())
+
+    if (inviteError || !inviteData || inviteData.length === 0) {
+      setErreur("Aucun invité trouvé avec ce nom/prénom.")
+      return
+    }
+
+    const invite = inviteData[0]
+    if (invite.groupe_id) {
+      // Récupère tous les membres du groupe
+      const { data: groupData, error: groupError } = await supabase
+        .from('invites')
+        .select()
+        .eq('groupe_id', invite.groupe_id)
+
+      if (groupError || !groupData || groupData.length === 0) {
+        setErreur("Erreur lors de la récupération du groupe.")
+        return
+      }
+
+      if (groupData.length === 1) {
+        // Un seul membre dans le groupe, redirige direct
+        router.push(`/rsvp?ids=${groupData[0].id}`)
+      } else {
+        // Plusieurs membres, ouvre la modale
+        setGroupMembers(groupData)
+        setSelectedIds(groupData.map((m) => m.id)) // Par défaut, tout coché
+        setShowModal(true)
+      }
+    } else {
+      // Pas de groupe, redirige direct avec id seul
+      router.push(`/rsvp?ids=${invite.id}`)
+    }
+  }
+
+  const toggleSelection = (id: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    )
+  }
+
+  const handleModalConfirm = () => {
+    if (selectedIds.length === 0) {
+      alert("Merci de sélectionner au moins une personne.")
+      return
+    }
+    setShowModal(false)
+    router.push(`/rsvp?ids=${selectedIds.join(',')}`)
+  }
+
+  return (
+    <main className="min-h-screen flex flex-col items-center justify-center p-4">
+      <h1 className="text-3xl font-bold mb-4">Bienvenue sur notre mariage 💍</h1>
+
+      <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4">
+        <input
+          type="text"
+          placeholder="Prénom"
+          value={prenom}
+          onChange={(e) => setPrenom(e.target.value)}
+          className="w-full p-2 border rounded"
+          required
+        />
+        <input
+          type="text"
+          placeholder="Nom"
+          value={nom}
+          onChange={(e) => setNom(e.target.value)}
+          className="w-full p-2 border rounded"
+          required
+        />
+        <button
+          type="submit"
+          className="w-full bg-pink-600 text-white p-2 rounded hover:bg-pink-700"
+        >
+          Accéder au formulaire
+        </button>
+        {erreur && <p className="text-red-600">{erreur}</p>}
+      </form>
+
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow-lg max-w-md w-full">
+            <h2 className="text-xl font-semibold mb-4">Sélectionnez les invités</h2>
+            <div className="max-h-60 overflow-auto mb-4">
+              {groupMembers.map((member) => (
+                <label key={member.id} className="flex items-center space-x-2 mb-2">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.includes(member.id)}
+                    onChange={() => toggleSelection(member.id)}
+                  />
+                  <span>{member.prenom} {member.nom}</span>
+                </label>
+              ))}
+            </div>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={() => setShowModal(false)}
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={handleModalConfirm}
+                className="px-4 py-2 bg-pink-600 text-white rounded hover:bg-pink-700"
+              >
+                Valider
+              </button>
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+      )}
+    </main>
+  )
 }
