@@ -10,7 +10,9 @@ interface Invite {
   id: string
   nom: string
   prenom: string
+  profil: string
   repas: string | null
+  logement: boolean |null
   participation_samedi: boolean | null
   participation_retour: boolean | null
   message?: string | null
@@ -20,7 +22,7 @@ interface Invite {
 export default function RsvpClient() {
   const { ids } = useInvite() // Récupère les ids du contexte
   const [invites, setInvites] = useState<Invite[]>([]) // Liste des invités
-  const [reponses, setReponses] = useState<{ [id: string]: { participation_Samedi: boolean, participation_Retour: boolean, repas: string, commentaire: string } }>({})
+  const [reponses, setReponses] = useState<{ [id: string]: { participation_Samedi: boolean, participation_Retour: boolean, logement : boolean, repas: string, commentaire: string } }>({})
   const [loading, setLoading] = useState(false) // Chargement
   const [submitted, setSubmitted] = useState(false) // A-t-on déjà répondu ?
 
@@ -44,6 +46,7 @@ export default function RsvpClient() {
           initialState[invite.id] = {
             participation_Samedi: invite.participation_Samedi ?? true,
             participation_Retour: invite.participation_Retour ?? true,
+            logement : invite.logement ?? false,
             repas: invite.repas || '',
             commentaire: invite.commentaire || '',
           }
@@ -59,7 +62,7 @@ export default function RsvpClient() {
   }, [ids])
 
   // Met à jour une réponse dans le state
-const handleChange = (id: string, field: 'participation_Samedi' | 'participation_Retour' | 'repas' | 'commentaire', value: string | boolean) => {
+const handleChange = (id: string, field: 'participation_Samedi' | 'participation_Retour'| 'logement' | 'repas' | 'commentaire', value: string | boolean) => {
     console.log(`Changement pour id=${id}, champ=${field}, valeur=`, value)
     setReponses(prev => ({
       ...prev,
@@ -79,6 +82,7 @@ const handleChange = (id: string, field: 'participation_Samedi' | 'participation
       id,
       participation_Samedi: data.participation_Samedi, // true ou false
       participation_Retour: data.participation_Retour, // true ou false
+      logement : data.logement,
       repas: data.repas,
       commentaire: data.commentaire,
     }))
@@ -90,6 +94,7 @@ const handleChange = (id: string, field: 'participation_Samedi' | 'participation
         participation_Samedi: update.participation_Samedi,
         participation_Retour: update.participation_Retour,
         repas: update.repas,
+        logement : update.logement,
         commentaire: update.commentaire,
       }).eq('id', update.id)
 
@@ -142,6 +147,28 @@ const handleChange = (id: string, field: 'participation_Samedi' | 'participation
               <option value="non">Non</option>
             </select>
           </label>
+
+
+          {invite.profil === 'logement_Oui' && (
+            <div className="mt-4">
+              <h3 className="font-semibold mb-2">Besoin de logement ?</h3>
+
+              <label className="block mt-2">
+                <span className="mr-2">Souhaitez-vous être hébergé (du vendredi au dimanche) ?</span>
+                <span className="mr-2">Possibilité de loger juste le samedi si il reste des places</span>
+                <select
+                  value={reponses[invite.id]?.logement ? 'oui' : 'non'}
+                  onChange={(e) => handleChange(invite.id, 'logement', e.target.value === 'oui')}
+                  
+                >
+                  <option value="non">Non</option>
+                  <option value="oui">Oui</option>
+                </select>
+              </label>
+
+              {/* Tu peux ajouter d'autres questions spécifiques ici */}
+            </div>
+          )}
 
           {/* Choix repas */}
           <label className="block mt-2">

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { InviteProvider } from './context/InviteContext'
-import NavBar from './components/NavBar'
+import LayoutClient from './LayoutClient'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,21 +19,16 @@ export const metadata: Metadata = {
   description: "Site de mariage personnalisé",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <InviteProvider>
-          <NavBar />
-          <main className="p-4">
+          <LayoutClient>
             {children}
-          </main>
+          </LayoutClient>
         </InviteProvider>
       </body>
     </html>
-  );
+  )
 }

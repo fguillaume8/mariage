@@ -58,7 +58,7 @@ export default function Home() {
         // Un seul membre dans le groupe, redirige direct
         const ids = [groupData[0].id]
         setIds(ids)
-        router.push(`/rsvp?ids=${groupData[0].id}`)
+        router.push(`/infos?ids=${groupData[0].id}`)
       } else {
         // Plusieurs membres, ouvre la modale
         setGroupMembers(groupData)
@@ -81,7 +81,7 @@ export default function Home() {
     }
     setShowModal(false)
     setIds(selectedIds)
-    router.push(`/rsvp?ids=${selectedIds.join(',')}`)
+    router.push(`/infos?ids=${selectedIds.join(',')}`)
   }
 
   return (

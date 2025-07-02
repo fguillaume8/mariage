@@ -2,9 +2,19 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useInvite } from '../context/InviteContext'
+import { useRouter } from 'next/navigation'
 
 export default function NavBar() {
+  const { setIds } = useInvite()
   const pathname = usePathname()
+  const router = useRouter()
+
+  const handleLogout = () => {
+    setIds([])                        // Vide le contexte
+    sessionStorage.removeItem('inviteIds') // Vide le sessionStorage
+    router.push('/')                    // Redirection accueil
+  }
 
   const links = [
     { href: '/rsvp', label: 'RSVP' },
@@ -28,6 +38,12 @@ export default function NavBar() {
             {label}
           </Link>
         ))}
+        <button
+        onClick={handleLogout}
+        className="bg-white text-pink-600 px-3 py-1 rounded hover:bg-pink-100"
+      >
+        Déconnexion
+      </button>
       </div>
     </nav>
   )
