@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect  } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from './lib/supabaseClient'
 import { Invite } from './lib/types'
+
 
 
 export default function Home() {
@@ -14,6 +15,13 @@ export default function Home() {
   const [groupMembers, setGroupMembers] = useState<Invite[]>([])
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const router = useRouter()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) return null // ou un loader neutre
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault()
@@ -107,8 +115,7 @@ export default function Home() {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg max-w-md w-full">
-            <h2 className="text-xl font-semibold mb-4">Sélectionnez les invités</h2>
+          <div className="bg-white dark:bg-gray-800 text-black dark:text-white p-6 rounded shadow-lg max-w-md w-full">            <h2 className="text-xl font-semibold mb-4">Sélectionnez les invités</h2>
             <div className="max-h-60 overflow-auto mb-4">
               {groupMembers.map((member) => (
                 <label key={member.id} className="flex items-center space-x-2 mb-2">

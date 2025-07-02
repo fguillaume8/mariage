@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { supabase } from '../lib/supabaseClient'
+import { useInvite } from '../context/InviteContext'
 
 type Invite = {
   id: string
@@ -15,35 +16,35 @@ type Invite = {
 
 export default function RsvpPage() {
   const searchParams = useSearchParams()
-  const ids = useMemo(() => {
-    const idsParam = searchParams.get('ids')
-    return idsParam ? idsParam.split(',') : []
-  }, [searchParams])
-
+  const { ids, setIds } = useInvite()
   const [invites, setInvites] = useState<Invite[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Charge les données depuis Supabase
+  // Synchronise le contexte avec les query params au chargement
   useEffect(() => {
-    if (ids.length === 0) {
+    const idsParam = searchParams.get('ids')
+    if (idsParam && (!ids || ids.length === 0)) {
+      const splitIds = idsParam.split(',')
+      setIds(splitIds)
+    }
+  }, [searchParams, ids, setIds])
+
+  
+  
+  // Charge les invités quand ids changent
+  useEffect(() => {
+    if (!ids || ids.length === 0) {
       setLoading(false)
       return
     }
 
-    const fetchInvites = async () => {
-      const { data, error } = await supabase
-        .from('invites')
-        .select('*')
-        .in('id', ids)
-
+    async function fetchInvites() {
+      const { data, error } = await supabase.from('invites').select('*').in('id', ids)
       if (error) {
         setError('Erreur chargement des invités')
-        setLoading(false)
-        return
-      }
-      if (data) {
+      } else {
         setInvites(data)
       }
       setLoading(false)
