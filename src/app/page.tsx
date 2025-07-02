@@ -4,6 +4,7 @@ import { useState, useEffect  } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from './lib/supabaseClient'
 import { Invite } from './lib/types'
+import { useInvite } from './context/InviteContext'
 
 
 
@@ -16,6 +17,7 @@ export default function Home() {
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
+  const { setIds } = useInvite()
 
   useEffect(() => {
     setMounted(true)
@@ -54,6 +56,8 @@ export default function Home() {
 
       if (groupData.length === 1) {
         // Un seul membre dans le groupe, redirige direct
+        const ids = [groupData[0].id]
+        setIds(ids)
         router.push(`/rsvp?ids=${groupData[0].id}`)
       } else {
         // Plusieurs membres, ouvre la modale
@@ -63,6 +67,7 @@ export default function Home() {
       }
     } else {
       // Pas de groupe, redirige direct avec id seul
+      setIds(ids)
       router.push(`/rsvp?ids=${invite.id}`)
     }
   }
@@ -79,6 +84,7 @@ export default function Home() {
       return
     }
     setShowModal(false)
+    setIds(selectedIds)
     router.push(`/rsvp?ids=${selectedIds.join(',')}`)
   }
 

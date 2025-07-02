@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { supabase } from '../lib/supabaseClient'
-import { useInvite } from '../context/InviteContext'
+import { supabase } from '../../lib/supabaseClient'
+import { useInvite } from '../../context/InviteContext'
 
 type Invite = {
   id: string
@@ -11,7 +11,6 @@ type Invite = {
   nom: string
   repas: string | null
   logement: boolean | null
-  // ajoute d'autres champs ici selon ta table
 }
 
 export default function RsvpPage() {
@@ -21,31 +20,34 @@ export default function RsvpPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState(false)
 
-  // Synchronise le contexte avec les query params au chargement
   useEffect(() => {
     const idsParam = searchParams.get('ids')
-    if (idsParam && (!ids || ids.length === 0)) {
+    if (idsParam) {
       const splitIds = idsParam.split(',')
-      setIds(splitIds)
+      if (!ids || ids.length === 0 || ids.join(',') !== idsParam) {
+        setIds(splitIds)
+      }
     }
   }, [searchParams, ids, setIds])
 
-  
-  
-  // Charge les invités quand ids changent
   useEffect(() => {
     if (!ids || ids.length === 0) {
+      setInvites([])
       setLoading(false)
       return
     }
 
     async function fetchInvites() {
+      setLoading(true)
       const { data, error } = await supabase.from('invites').select('*').in('id', ids)
       if (error) {
         setError('Erreur chargement des invités')
+        setInvites([])
       } else {
-        setInvites(data)
+        setInvites(data || [])
+        setError(null)
       }
       setLoading(false)
     }
@@ -53,39 +55,28 @@ export default function RsvpPage() {
     fetchInvites()
   }, [ids])
 
-  // Mise à jour des champs localement dans le state
-
-  const handleChange = (
-    id: string,
-    field: keyof Invite,
-    value: string | boolean | null
-  ) => {
-    setInvites((prev) =>
-      prev.map((inv) => (inv.id === id ? { ...inv, [field]: value } : inv))
-    )
+  const handleChange = (id: string, field: keyof Invite, value: string | boolean | null) => {
+    setInvites((prev) => prev.map((inv) => (inv.id === id ? { ...inv, [field]: value } : inv)))
   }
-  
 
-  // Sauvegarder en base
   const handleSave = async () => {
     setSaving(true)
     setError(null)
+    setSuccess(false)
 
     try {
-      // On fait une mise à jour en batch pour chaque invité
       for (const invite of invites) {
         const { error } = await supabase
           .from('invites')
           .update({
             repas: invite.repas,
             logement: invite.logement,
-            // ajoute ici les autres champs modifiables
           })
           .eq('id', invite.id)
 
         if (error) throw error
       }
-      alert('Réponses sauvegardées !')
+      setSuccess(true)
     } catch (e) {
       setError('Erreur lors de la sauvegarde')
       console.error(e)
@@ -95,7 +86,6 @@ export default function RsvpPage() {
   }
 
   if (loading) return <p>Chargement...</p>
-
   if (error) return <p className="text-red-600">{error}</p>
 
   return (
@@ -103,10 +93,7 @@ export default function RsvpPage() {
       <h1 className="text-2xl font-bold mb-6">RSVP - Confirmation de présence</h1>
 
       {invites.map((invite) => (
-        <div
-          key={invite.id}
-          className="mb-8 p-4 border rounded bg-gray-50"
-        >
+        <div key={invite.id} className="mb-8 p-4 border rounded bg-gray-50">
           <h2 className="text-xl font-semibold mb-4">
             {invite.prenom} {invite.nom}
           </h2>
@@ -115,9 +102,7 @@ export default function RsvpPage() {
             Repas :
             <select
               value={invite.repas || ''}
-              onChange={(e) =>
-                handleChange(invite.id, 'repas', e.target.value)
-              }
+              onChange={(e) => handleChange(invite.id, 'repas', e.target.value)}
               className="mt-1 p-2 border rounded w-full"
             >
               <option value="">-- Choisir un repas --</option>
@@ -132,21 +117,19 @@ export default function RsvpPage() {
             <input
               type="checkbox"
               checked={invite.logement || false}
-              onChange={(e) =>
-                handleChange(invite.id, 'logement', e.target.checked)
-              }
+              onChange={(e) => handleChange(invite.id, 'logement', e.target.checked)}
               className="ml-2"
             />
           </label>
-
-          {/* Ajoute ici d’autres champs selon besoin */}
         </div>
       ))}
+
+      {success && <p className="mb-4 text-green-600">Réponses sauvegardées avec succès !</p>}
 
       <button
         onClick={handleSave}
         disabled={saving}
-        className="bg-pink-600 text-white px-4 py-2 rounded hover:bg-pink-700"
+        className="bg-pink-600 text-white px-4 py-2 rounded hover:bg-pink-700 disabled:opacity-50"
       >
         {saving ? 'Sauvegarde en cours...' : 'Enregistrer mes réponses'}
       </button>

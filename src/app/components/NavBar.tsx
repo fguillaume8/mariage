@@ -22,7 +22,7 @@ export default function NavBar() {
             key={href}
             href={href}
             className={`hover:underline hover:text-pink-600 transition ${
-              pathname === href ? 'font-bold text-pink-600' : ''
+              pathname.startsWith(href) ? 'font-bold text-pink-600' : ''
             }`}
           >
             {label}
