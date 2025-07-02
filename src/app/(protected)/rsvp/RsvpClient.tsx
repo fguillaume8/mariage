@@ -41,6 +41,11 @@ export default function RsvpPage() {
 
     async function fetchInvites() {
       setLoading(true)
+      if (!ids || ids.length === 0) {
+        setInvites([])
+        setLoading(false)
+        return
+      }
       const { data, error } = await supabase.from('invites').select('*').in('id', ids)
       if (error) {
         setError('Erreur chargement des invités')

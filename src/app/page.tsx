@@ -65,11 +65,7 @@ export default function Home() {
         setSelectedIds(groupData.map((m) => m.id)) // Par défaut, tout coché
         setShowModal(true)
       }
-    } else {
-      // Pas de groupe, redirige direct avec id seul
-      setIds(ids)
-      router.push(`/rsvp?ids=${invite.id}`)
-    }
+    } 
   }
 
   const toggleSelection = (id: string) => {
