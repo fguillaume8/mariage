@@ -4,17 +4,26 @@
 import { useState, useEffect } from 'react'
 import { useInvite } from '@/app/context/InviteContext' // Contexte pour accéder aux ids
 import { supabase } from '@/app/lib/supabaseClient' // Client Supabase
-import { useRouter } from 'next/navigation'
+
+
+interface Invite {
+  id: string
+  nom: string
+  prenom: string
+  repas: string | null
+  participation_samedi: boolean | null
+  participation_retour: boolean | null
+  message?: string | null
+}
 
 // Composant principal
 export default function RsvpClient() {
   const { ids } = useInvite() // Récupère les ids du contexte
-  const [invites, setInvites] = useState<any[]>([]) // Liste des invités
+  const [invites, setInvites] = useState<Invite[]>([]) // Liste des invités
   const [reponses, setReponses] = useState<{ [id: string]: { participation_Samedi: boolean, participation_Retour: boolean, repas: string, commentaire: string } }>({})
   const [loading, setLoading] = useState(false) // Chargement
   const [submitted, setSubmitted] = useState(false) // A-t-on déjà répondu ?
 
-  const router = useRouter()
 
   // Charge les infos des invités à partir des ids
   useEffect(() => {
@@ -25,7 +34,7 @@ export default function RsvpClient() {
       setLoading(true)
 
       // Requête Supabase : récupère tous les invités avec l'un des ids
-      const { data, error } = await supabase.from('invites').select('*').in('id', ids)
+      const { data } = await supabase.from('invites').select('*').in('id', ids)
       if (data) {
         setInvites(data)
 
@@ -50,7 +59,7 @@ export default function RsvpClient() {
   }, [ids])
 
   // Met à jour une réponse dans le state
-  const handleChange = (id: string, field: string, value: any) => {
+const handleChange = (id: string, field: 'participation_Samedi' | 'participation_Retour' | 'repas' | 'commentaire', value: string | boolean) => {
     console.log(`Changement pour id=${id}, champ=${field}, valeur=`, value)
     setReponses(prev => ({
       ...prev,
@@ -104,7 +113,7 @@ export default function RsvpClient() {
   // Formulaire RSVP
   return (
     <div className="max-w-xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Répondez à l'invitation</h1>
+      <h1 className="text-2xl font-bold mb-4">Répondez à l&apos;invitation</h1>
 
       {invites.map(invite => (
         <div key={invite.id} className="mb-6 p-4 border rounded">
