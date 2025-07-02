@@ -1,142 +1,171 @@
 'use client'
 
+// Imports nécessaires
 import { useState, useEffect } from 'react'
-import { useSearchParams } from 'next/navigation'
-import { supabase } from '../../lib/supabaseClient'
-import { useInvite } from '../../context/InviteContext'
+import { useInvite } from '@/app/context/InviteContext' // Contexte pour accéder aux ids
+import { supabase } from '@/app/lib/supabaseClient' // Client Supabase
+import { useRouter } from 'next/navigation'
 
-type Invite = {
-  id: string
-  prenom: string
-  nom: string
-  repas: string | null
-  logement: boolean | null
-}
+// Composant principal
+export default function RsvpClient() {
+  const { ids } = useInvite() // Récupère les ids du contexte
+  const [invites, setInvites] = useState<any[]>([]) // Liste des invités
+  const [reponses, setReponses] = useState<{ [id: string]: { participation_Samedi: boolean, participation_Retour: boolean, repas: string, commentaire: string } }>({})
+  const [loading, setLoading] = useState(false) // Chargement
+  const [submitted, setSubmitted] = useState(false) // A-t-on déjà répondu ?
 
-export default function RsvpPage() {
-  const searchParams = useSearchParams()
-  const { ids, setIds } = useInvite()
-  const [invites, setInvites] = useState<Invite[]>([])
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
+  const router = useRouter()
 
+  // Charge les infos des invités à partir des ids
   useEffect(() => {
-    const idsParam = searchParams.get('ids')
-    if (idsParam) {
-      const splitIds = idsParam.split(',')
-      if (!ids || ids.length === 0 || ids.join(',') !== idsParam) {
-        setIds(splitIds)
-      }
-    }
-  }, [searchParams, ids, setIds])
-
-  useEffect(() => {
-    if (!ids || ids.length === 0) {
-      setInvites([])
-      setLoading(false)
-      return
-    }
-
     async function fetchInvites() {
+      if (!ids || ids.length === 0) return
+      
+      console.log('Récupération des invités avec ids:', ids)
       setLoading(true)
-      if (!ids || ids.length === 0) {
-        setInvites([])
-        setLoading(false)
-        return
-      }
+
+      // Requête Supabase : récupère tous les invités avec l'un des ids
       const { data, error } = await supabase.from('invites').select('*').in('id', ids)
-      if (error) {
-        setError('Erreur chargement des invités')
-        setInvites([])
-      } else {
-        setInvites(data || [])
-        setError(null)
+      if (data) {
+        setInvites(data)
+
+        // Initialise les réponses avec des valeurs par défaut
+        const initialState: typeof reponses = {}
+        data.forEach(invite => {
+          initialState[invite.id] = {
+            participation_Samedi: invite.participation_Samedi ?? true,
+            participation_Retour: invite.participation_Retour ?? true,
+            repas: invite.repas || '',
+            commentaire: invite.commentaire || '',
+          }
+        })
+        console.log('État initial des réponses :', initialState)
+        setReponses(initialState)
       }
+
       setLoading(false)
     }
 
     fetchInvites()
   }, [ids])
 
-  const handleChange = (id: string, field: keyof Invite, value: string | boolean | null) => {
-    setInvites((prev) => prev.map((inv) => (inv.id === id ? { ...inv, [field]: value } : inv)))
-  }
-
-  const handleSave = async () => {
-    setSaving(true)
-    setError(null)
-    setSuccess(false)
-
-    try {
-      for (const invite of invites) {
-        const { error } = await supabase
-          .from('invites')
-          .update({
-            repas: invite.repas,
-            logement: invite.logement,
-          })
-          .eq('id', invite.id)
-
-        if (error) throw error
+  // Met à jour une réponse dans le state
+  const handleChange = (id: string, field: string, value: any) => {
+    console.log(`Changement pour id=${id}, champ=${field}, valeur=`, value)
+    setReponses(prev => ({
+      ...prev,
+      [id]: {
+        ...prev[id],
+        [field]: value,
       }
-      setSuccess(true)
-    } catch (e) {
-      setError('Erreur lors de la sauvegarde')
-      console.error(e)
-    } finally {
-      setSaving(false)
-    }
+    }))
   }
 
+  // Envoie les réponses vers Supabase
+  const handleSubmit = async () => {
+    setLoading(true)
+    console.log('Soumission des réponses :', reponses)
+    // Prépare les données à envoyer
+    const updates = Object.entries(reponses).map(([id, data]) => ({
+      id,
+      participation_Samedi: data.participation_Samedi, // true ou false
+      participation_Retour: data.participation_Retour, // true ou false
+      repas: data.repas,
+      commentaire: data.commentaire,
+    }))
+
+    // Envoie une requête de mise à jour par invité
+    for (const update of updates) {
+      console.log(`Mise à jour de l'invité ${update.id} avec :`, update)
+      const { error } = await supabase.from('invites').update({
+        participation_Samedi: update.participation_Samedi,
+        participation_Retour: update.participation_Retour,
+        repas: update.repas,
+        commentaire: update.commentaire,
+      }).eq('id', update.id)
+
+      if (error) {
+        console.error(`Erreur lors de la mise à jour de ${update.id} :`, error)
+      } else {
+        console.log(`Mise à jour réussie pour ${update.id}`)
+      }
+    }
+
+    setSubmitted(true)
+    setLoading(false)
+  }
+
+  // Affiche un message de chargement
   if (loading) return <p>Chargement...</p>
-  if (error) return <p className="text-red-600">{error}</p>
 
+  // Affiche une confirmation si soumis
+  if (submitted) return <p className="text-green-600 font-semibold">Merci pour votre réponse ! 💌</p>
+
+  // Formulaire RSVP
   return (
-    <div className="max-w-3xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-6">RSVP - Confirmation de présence</h1>
+    <div className="max-w-xl mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Répondez à l'invitation</h1>
 
-      {invites.map((invite) => (
-        <div key={invite.id} className="mb-8 p-4 border rounded bg-gray-50">
-          <h2 className="text-xl font-semibold mb-4">
-            {invite.prenom} {invite.nom}
-          </h2>
+      {invites.map(invite => (
+        <div key={invite.id} className="mb-6 p-4 border rounded">
+          <h2 className="font-semibold">{invite.prenom} {invite.nom}</h2>
 
-          <label className="block mb-2">
-            Repas :
+          {/* Samedi */}
+          <label className="block mt-2">
+            <span className="mr-2">Présent(e) le samedi?</span>
             <select
-              value={invite.repas || ''}
-              onChange={(e) => handleChange(invite.id, 'repas', e.target.value)}
-              className="mt-1 p-2 border rounded w-full"
+              value={reponses[invite.id]?.participation_Samedi ? 'oui' : 'non'}
+              onChange={(e) => handleChange(invite.id, 'participation_Samedi', e.target.value === 'oui')}
             >
-              <option value="">-- Choisir un repas --</option>
-              <option value="viande">Viande</option>
-              <option value="poisson">Poisson</option>
-              <option value="vegetarien">Végétarien</option>
+              <option value="oui">Oui</option>
+              <option value="non">Non</option>
             </select>
           </label>
 
-          <label className="block mb-2">
-            Logement nécessaire :
-            <input
-              type="checkbox"
-              checked={invite.logement || false}
-              onChange={(e) => handleChange(invite.id, 'logement', e.target.checked)}
-              className="ml-2"
+          {/* Retour */}
+          <label className="block mt-2">
+            <span className="mr-2">Présent(e) au retour?</span>
+            <select
+              value={reponses[invite.id]?.participation_Retour ? 'oui' : 'non'}
+              onChange={(e) => handleChange(invite.id, 'participation_Retour', e.target.value === 'oui')}
+            >
+              <option value="oui">Oui</option>
+              <option value="non">Non</option>
+            </select>
+          </label>
+
+          {/* Choix repas */}
+          <label className="block mt-2">
+            <span>Choix du repas</span>
+            <select
+              value={reponses[invite.id]?.repas || ''}
+              onChange={(e) => handleChange(invite.id, 'repas', e.target.value)}
+              className="mt-1 p-2 border rounded w-full"            >
+                <option value="">-- Choisir un repas --</option>
+                <option value="viande">Viande</option>
+                <option value="poisson">Poisson</option>
+                <option value="vegetarien">Végétarien</option>
+              </select>
+          </label>
+
+          {/* Message libre */}
+          <label className="block mt-2">
+            <span>Un petit message ?</span>
+            <textarea
+              value={reponses[invite.id]?.commentaire || ''}
+              onChange={(e) => handleChange(invite.id, 'commentaire', e.target.value)}
+              className="w-full mt-1 p-2 border rounded"
             />
           </label>
         </div>
       ))}
 
-      {success && <p className="mb-4 text-green-600">Réponses sauvegardées avec succès !</p>}
-
+      {/* Bouton d'envoi */}
       <button
-        onClick={handleSave}
-        disabled={saving}
-        className="bg-pink-600 text-white px-4 py-2 rounded hover:bg-pink-700 disabled:opacity-50"
+        onClick={handleSubmit}
+        className="bg-pink-600 text-white px-4 py-2 rounded hover:bg-pink-700"
       >
-        {saving ? 'Sauvegarde en cours...' : 'Enregistrer mes réponses'}
+        Envoyer les réponses
       </button>
     </div>
   )
