@@ -1,10 +1,10 @@
 import React, { Suspense } from 'react'
-import FaqClient from './FaqClient'
+import SondageClient from './SondageClient'
 
-export default function FaqPage() {
+export default function SondagePage() {
   return (
     <Suspense fallback={<p>Chargement...</p>}>
-      <FaqClient />
+      <SondageClient />
     </Suspense>
   )
 }

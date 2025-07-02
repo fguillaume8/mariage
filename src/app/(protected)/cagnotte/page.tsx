@@ -1,10 +1,10 @@
 import React, { Suspense } from 'react'
-import FaqClient from './FaqClient'
+import CagnotteClient from './CagnotteClient'
 
-export default function FaqPage() {
+export default function CagnottePage() {
   return (
     <Suspense fallback={<p>Chargement...</p>}>
-      <FaqClient />
+      <CagnotteClient />
     </Suspense>
   )
 }
