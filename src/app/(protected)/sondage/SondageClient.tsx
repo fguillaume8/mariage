@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/app/lib/supabaseClient'
 import { useInvite } from '@/app/context/InviteContext'
 import Image from 'next/image'
-import { Dialog } from '@headlessui/react'
 import { AnimatePresence, motion } from 'framer-motion'
 
 interface Question {
