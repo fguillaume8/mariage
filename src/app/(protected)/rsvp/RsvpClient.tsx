@@ -118,21 +118,24 @@ const handleChange = (id: string, field: 'participation_Samedi' | 'participation
   // Formulaire RSVP
   return (
     <div className="relative w-full h-screen">
-            <Image
-            src="/image/mariage_pierre.jpg"
-            alt="Image de fond"
-            fill
-            priority
-            className="object-cover z-0"
-            style={{ position: 'absolute' }}
-            />
-    <div className="absolute top-0 left-0 h-full w-[40%] bg-white/80 z-10 p-10 shadow-2xl overflow-y-auto">
+  <Image
+    src="/image/mariage_pierre.jpg"
+    alt="Image de fond"
+    fill
+    priority
+    className="object-cover z-0"
+    style={{ position: 'absolute' }}
+  />
 
-      <h1 className="text-2xl font-bold mb-4">Répondez à l&apos;invitation</h1>
+  {/* Conteneur centré */}
+  <div className="relative z-10 flex justify-center items-center h-full px-4">
+    <div className="bg-white/80 backdrop-blur-md rounded-xl shadow-2xl p-8 max-w-2xl w-full overflow-y-auto max-h-[90vh]">
+
+      <h1 className="text-3xl font-bold text-center text-pink-600 mb-6">Répondez à l'invitation</h1>
 
       {invites.map(invite => (
-        <div key={invite.id} className="mb-6 p-4 border rounded">
-          <h2 className="font-semibold">{invite.prenom} {invite.nom}</h2>
+        <div key={invite.id} className="mb-6 p-4 border rounded bg-white/60">
+          <h2 className="font-semibold text-lg">{invite.prenom} {invite.nom}</h2>
 
           {/* Samedi */}
           <label className="block mt-2">
@@ -140,6 +143,7 @@ const handleChange = (id: string, field: 'participation_Samedi' | 'participation
             <select
               value={reponses[invite.id]?.participation_Samedi ? 'oui' : 'non'}
               onChange={(e) => handleChange(invite.id, 'participation_Samedi', e.target.value === 'oui')}
+              className="border rounded px-2 py-1"
             >
               <option value="oui">Oui</option>
               <option value="non">Non</option>
@@ -152,31 +156,27 @@ const handleChange = (id: string, field: 'participation_Samedi' | 'participation
             <select
               value={reponses[invite.id]?.participation_Retour ? 'oui' : 'non'}
               onChange={(e) => handleChange(invite.id, 'participation_Retour', e.target.value === 'oui')}
+              className="border rounded px-2 py-1"
             >
               <option value="oui">Oui</option>
               <option value="non">Non</option>
             </select>
           </label>
 
-
           {invite.profil === 'logement_Oui' && (
             <div className="mt-4">
               <h3 className="font-semibold mb-2">Besoin de logement ?</h3>
-
               <label className="block mt-2">
-                <span className="mr-2">Souhaitez-vous être hébergé (du vendredi au dimanche) ?</span>
-                <span className="mr-2">Possibilité de loger juste le samedi si il reste des places</span>
+                <span className="mr-2">Souhaitez-vous être hébergé ?</span>
                 <select
                   value={reponses[invite.id]?.logement ? 'oui' : 'non'}
                   onChange={(e) => handleChange(invite.id, 'logement', e.target.value === 'oui')}
-                  
+                  className="border rounded px-2 py-1"
                 >
                   <option value="non">Non</option>
                   <option value="oui">Oui</option>
                 </select>
               </label>
-
-              {/* Tu peux ajouter d'autres questions spécifiques ici */}
             </div>
           )}
 
@@ -186,12 +186,13 @@ const handleChange = (id: string, field: 'participation_Samedi' | 'participation
             <select
               value={reponses[invite.id]?.repas || ''}
               onChange={(e) => handleChange(invite.id, 'repas', e.target.value)}
-              className="mt-1 p-2 border rounded w-full"            >
-                <option value="">-- Choisir un repas --</option>
-                <option value="viande">Viande</option>
-                <option value="poisson">Poisson</option>
-                <option value="vegetarien">Végétarien</option>
-              </select>
+              className="mt-1 p-2 border rounded w-full"
+            >
+              <option value="">-- Choisir un repas --</option>
+              <option value="viande">Viande</option>
+              <option value="poisson">Poisson</option>
+              <option value="vegetarien">Végétarien</option>
+            </select>
           </label>
 
           {/* Message libre */}
@@ -206,14 +207,16 @@ const handleChange = (id: string, field: 'participation_Samedi' | 'participation
         </div>
       ))}
 
-      {/* Bouton d'envoi */}
-      <button
-        onClick={handleSubmit}
-        className="bg-pink-600 text-white px-4 py-2 rounded hover:bg-pink-700"
-      >
-        Envoyer les réponses
-      </button>
+      <div className="text-center">
+        <button
+          onClick={handleSubmit}
+          className="bg-pink-500 hover:bg-pink-600 text-white font-semibold px-6 py-2 rounded-full mt-4 shadow-md"
+        >
+          Envoyer les réponses
+        </button>
+      </div>
     </div>
-    </div>
+  </div>
+</div>
   )
 }
