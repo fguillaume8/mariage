@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react'
 import { useInvite } from '@/app/context/InviteContext' // Contexte pour accéder aux ids
 import { supabase } from '@/app/lib/supabaseClient' // Client Supabase
-
+import Image from 'next/image'
 
 interface Invite {
   id: string
@@ -117,7 +117,17 @@ const handleChange = (id: string, field: 'participation_Samedi' | 'participation
 
   // Formulaire RSVP
   return (
-    <div className="max-w-xl mx-auto p-4">
+    <div className="relative w-full h-screen">
+            <Image
+            src="/image/mariage_pierre.jpg"
+            alt="Image de fond"
+            fill
+            priority
+            className="object-cover z-0"
+            style={{ position: 'absolute' }}
+            />
+    <div className="absolute top-0 left-0 h-full w-[40%] bg-white/80 z-10 p-10 shadow-2xl overflow-y-auto">
+
       <h1 className="text-2xl font-bold mb-4">Répondez à l&apos;invitation</h1>
 
       {invites.map(invite => (
@@ -203,6 +213,7 @@ const handleChange = (id: string, field: 'participation_Samedi' | 'participation
       >
         Envoyer les réponses
       </button>
+    </div>
     </div>
   )
 }

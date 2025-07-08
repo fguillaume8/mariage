@@ -22,6 +22,7 @@ export default function NavBar() {
     { href: '/infos', label: 'Infos' },
     { href: '/cagnotte', label: 'Cagnotte' },
     { href: '/sondage', label: 'Sondage' },
+    { href: '/contact', label: 'Nous contacter' },
   ]
 
   return (
