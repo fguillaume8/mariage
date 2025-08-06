@@ -69,7 +69,7 @@ export default function Page() {
   const totalRetour = invites.filter((i) => i.participation_Retour).length
   const totalLogement = invites.filter((i) => i.logement).length
 
-  function exportCSV(data: any[], filename = 'export.csv') {
+  function exportCSV(data: Invite[], filename = 'export.csv') {
     if (!data || data.length === 0) return
 
     const headers = Object.keys(data[0]).join(',')
