@@ -131,7 +131,7 @@ const handleChange = (id: string, field: 'participation_Samedi' | 'participation
   <div className="relative z-10 flex justify-center items-center h-full px-4">
     <div className="bg-white/80 backdrop-blur-md rounded-xl shadow-2xl p-8 max-w-2xl w-full overflow-y-auto max-h-[90vh]">
 
-      <h1 className="text-3xl font-bold text-center text-pink-600 mb-6">Répondez à l invitation</h1>
+      <h1 className="text-3xl font-bold text-center text-pink-600 mb-6">Répondez à l&apos;invitation</h1>
 
       {invites.map(invite => (
         <div key={invite.id} className="mb-6 p-4 border rounded bg-white/60">

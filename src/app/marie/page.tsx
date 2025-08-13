@@ -5,8 +5,8 @@ export default function Page({ searchParams }: { searchParams: { [key: string]: 
   const SECRET_TOKEN = 'ton_token_secret'
 
   if (token !== SECRET_TOKEN) {
-    redirect('/')
+    redirect('/') // redirection côté serveur
   }
 
-  redirect(`/marie/view?token=${token}`)
+  redirect(`/marie/view?token=${token}`) // redirection côté serveur
 }
