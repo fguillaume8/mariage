@@ -1,7 +1,8 @@
 import { redirect } from 'next/navigation'
 
-export default function Page({ searchParams }: { searchParams: { [key: string]: string | undefined } }) {
-  const token = searchParams?.token
+export default async function Page({ searchParams }: { searchParams: Promise<{ [key: string]: string | undefined }> }) {
+  const params = await searchParams
+  const token = params.token
 
   const SECRET_TOKEN = 'ton_token_secret' // ← à personnaliser
 
