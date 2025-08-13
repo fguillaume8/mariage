@@ -1,18 +1,17 @@
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 
-// Typage des props injectées par Next.js
-type Props = {
-  searchParams?: { [key: string]: string | string[] };
-};
+// 🔹 Fonction pour générer les métadonnées dynamiques
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] }>;
+}): Promise<Metadata> {
+  const resolvedSearchParams = await searchParams;
+  const token = Array.isArray(resolvedSearchParams.token)
+    ? resolvedSearchParams.token[0]
+    : resolvedSearchParams.token;
 
-// Fonction pour générer dynamiquement les métadonnées
-export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
-  const token = Array.isArray(searchParams?.token)
-    ? searchParams.token[0]
-    : searchParams?.token;
-
-  // Tu peux personnaliser le titre selon le token
   if (token === "ton_token_secret") {
     return {
       title: "Accès sécurisé à Marie",
@@ -26,11 +25,16 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   };
 }
 
-// Composant principal de la page
-export default function Page({ searchParams }: Props) {
-  const token = Array.isArray(searchParams?.token)
-    ? searchParams.token[0]
-    : searchParams?.token;
+// 🔹 Composant principal de la page
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] }>;
+}) {
+  const resolvedSearchParams = await searchParams;
+  const token = Array.isArray(resolvedSearchParams.token)
+    ? resolvedSearchParams.token[0]
+    : resolvedSearchParams.token;
 
   const SECRET_TOKEN = "ton_token_secret";
 
