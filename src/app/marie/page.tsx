@@ -1,14 +1,14 @@
 import { redirect } from "next/navigation";
 
-interface MariePageProps {
-  params: object;
-  searchParams: Record<string, string | string[]>;
+interface PageProps {
+  params: Record<string, string>;
+  searchParams?: Record<string, string | string[]>;
 }
 
-export default function Page({ searchParams }: MariePageProps) {
-  const token = Array.isArray(searchParams.token)
+export default function Page({ searchParams }: PageProps) {
+  const token = Array.isArray(searchParams?.token)
     ? searchParams.token[0]
-    : searchParams.token;
+    : searchParams?.token;
 
   const SECRET_TOKEN = "ton_token_secret";
 
