@@ -1,46 +1,28 @@
-import { redirect } from "next/navigation";
-import type { Metadata } from "next";
+// Rendu dynamique pour éviter toute tentative de pré-rendu statique
+export const dynamic = 'force-dynamic';
 
-// 🔹 Fonction pour générer les métadonnées dynamiques
-export async function generateMetadata({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}): Promise<Metadata> {
-  const token = Array.isArray(searchParams.token)
-    ? searchParams.token[0]
-    : searchParams.token;
+import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
+import ClientView from './ClientView';
 
-  if (token === "ton_token_secret") {
-    return {
-      title: "Accès sécurisé à Marie",
-      description: "Bienvenue sur la page privée de Marie.",
-    };
-  }
-
-  return {
-    title: "Accès refusé",
-    description: "Vous devez fournir un token valide.",
-  };
-}
-
-// 🔹 Composant principal de la page
 export default function Page({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Record<string, string | string[] | undefined>;
 }) {
-  const token = Array.isArray(searchParams.token)
-    ? searchParams.token[0]
-    : searchParams.token;
+  const raw = searchParams.token;
+  const token = Array.isArray(raw) ? raw[0] : raw;
+  const SECRET_TOKEN = 'ton_token_secret';
 
-  const SECRET_TOKEN = "ton_token_secret";
-
+  // ✅ Validation du token côté serveur (pas de hook client nécessaire)
   if (!token || token !== SECRET_TOKEN) {
-    redirect("/");
-  } else {
-    redirect(`/marie/view?token=${token}`);
+    redirect('/');
   }
 
-  return null; // Rien à afficher, car on redirige immédiatement
+  // On peut passer le token en prop si tu en as besoin, sinon inutile
+  return (
+    <Suspense fallback={<div className="p-6">Chargement…</div>}>
+      <ClientView />
+    </Suspense>
+  );
 }

@@ -1,104 +1,92 @@
-'use client'
+'use client';
 
-import { useSearchParams, useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import { supabase } from '@/app/lib/supabaseClient'
-import { saveAs } from 'file-saver'
+import { useEffect, useState } from 'react';
+import { supabase } from '@/app/lib/supabaseClient';
+import { saveAs } from 'file-saver';
 
 interface Invite {
-  id: string
-  nom: string
-  prenom: string
-  participation_Samedi: boolean | null
-  participation_Retour: boolean | null
-  repas: string | null
-  logement: boolean
-  commentaire?: string
-  groupe?: string
+  id: string;
+  nom: string;
+  prenom: string;
+  participation_Samedi: boolean | null;
+  participation_Retour: boolean | null;
+  repas: string | null;
+  logement: boolean;
+  commentaire?: string;
+  groupe?: string;
 }
 
-export default function ClientPage() {
-  const searchParams = useSearchParams()
-  const router = useRouter()
-  const [invites, setInvites] = useState<Invite[] | null>(null)
-  const [filtreNom, setFiltreNom] = useState('')
-  const [filtreGroupe, setFiltreGroupe] = useState('')
-  const [showStats, setShowStats] = useState(true)
-  const [showNonRepondus, setShowNonRepondus] = useState(true)
-  const [showTableau, setShowTableau] = useState(true)
-
-  const token = searchParams.get('token')
-  const SECRET_TOKEN = 'ton_token_secret'
+export default function ClientView() {
+  const [invites, setInvites] = useState<Invite[] | null>(null);
+  const [filtreNom, setFiltreNom] = useState('');
+  const [filtreGroupe, setFiltreGroupe] = useState('');
+  const [showStats, setShowStats] = useState(true);
+  const [showNonRepondus, setShowNonRepondus] = useState(true);
+  const [showTableau, setShowTableau] = useState(true);
 
   useEffect(() => {
-    if (token !== SECRET_TOKEN) {
-      router.push('/')
-      return
-    }
-
     const fetchData = async () => {
-      const { data, error } = await supabase.from('invites').select('*')
-      if (!error) setInvites(data as Invite[])
-    }
+      const { data, error } = await supabase.from('invites').select('*');
+      if (!error) setInvites(data as Invite[]);
+    };
+    fetchData();
+  }, []);
 
-    fetchData()
-  }, [token, router])
-
-  if (!invites) return <div className="p-6">Chargement...</div>
+  if (!invites) return <div className="p-6">Chargement...</div>;
 
   const repondus = invites.filter(
     (invite) =>
       invite.participation_Samedi !== null ||
       invite.participation_Retour !== null ||
       invite.repas !== null
-  )
+  );
 
   const invitesFiltres = repondus.filter((invite) => {
     const matchNom = `${invite.prenom} ${invite.nom}`
       .toLowerCase()
-      .includes(filtreNom.toLowerCase())
+      .includes(filtreNom.toLowerCase());
     const matchGroupe = filtreGroupe
       ? invite.groupe?.toLowerCase().includes(filtreGroupe.toLowerCase())
-      : true
-    return matchNom && matchGroupe
-  })
+      : true;
+    return matchNom && matchGroupe;
+  });
 
   const nonRepondus = invites.filter(
     (invite) =>
       invite.participation_Samedi === null &&
       invite.participation_Retour === null &&
       invite.repas === null
-  )
+  );
 
-  const total = invites.length
-  const totalSamedi = invites.filter((i) => i.participation_Samedi).length
-  const totalRetour = invites.filter((i) => i.participation_Retour).length
-  const totalLogement = invites.filter((i) => i.logement).length
+  const total = invites.length;
+  const totalSamedi = invites.filter((i) => i.participation_Samedi).length;
+  const totalRetour = invites.filter((i) => i.participation_Retour).length;
+  const totalLogement = invites.filter((i) => i.logement).length;
 
   function exportCSV(data: Invite[], filename = 'export.csv') {
-    if (!data || data.length === 0) return
+    if (!data || data.length === 0) return;
 
-    const headers = Object.keys(data[0]).join(',')
-    const rows = data.map((row) =>
-      Object.values(row)
-        .map((value) =>
-          typeof value === 'string' && value.includes(',')
-            ? `"${value.replace(/"/g, '""')}"`
-            : value
-        )
-        .join(',')
-    )
+    const headers = Object.keys(data[0]).join(',');
+    const rows = data
+      .map((row) =>
+        Object.values(row)
+          .map((value) =>
+            typeof value === 'string' && value.includes(',')
+              ? `"${value.replace(/"/g, '""')}"`
+              : value
+          )
+          .join(',')
+      )
+      .join('\n');
 
-    const csvContent = [headers, ...rows].join('\n')
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-    saveAs(blob, filename)
+    const csvContent = [headers, rows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    saveAs(blob, filename);
   }
 
   return (
     <div className="min-h-screen bg-gray-50 p-10 space-y-8">
-      <h1 className="text-3xl font-bold mb-4">
-        👰‍♀️🤵‍♂️ Résumé des réponses RSVP
-      </h1>
+      <h1 className="text-3xl font-bold mb-4">👰‍♀️🤵‍♂️ Résumé des réponses RSVP</h1>
 
       {/* 🧮 Statistiques */}
       <div>
@@ -110,18 +98,10 @@ export default function ClientPage() {
         </button>
         {showStats && (
           <div className="bg-white p-4 rounded shadow text-sm">
-            <p>
-              <strong>🎉 Total invités :</strong> {total}
-            </p>
-            <p>
-              <strong>✅ Présents samedi :</strong> {totalSamedi}
-            </p>
-            <p>
-              <strong>🏁 Présents au retour :</strong> {totalRetour}
-            </p>
-            <p>
-              <strong>🛏️ Besoin logement :</strong> {totalLogement}
-            </p>
+            <p><strong>🎉 Total invités :</strong> {total}</p>
+            <p><strong>✅ Présents samedi :</strong> {totalSamedi}</p>
+            <p><strong>🏁 Présents au retour :</strong> {totalRetour}</p>
+            <p><strong>🛏️ Besoin logement :</strong> {totalLogement}</p>
           </div>
         )}
       </div>
@@ -157,9 +137,7 @@ export default function ClientPage() {
                       <tr key={invite.id}>
                         <td className="border p-2">{invite.prenom}</td>
                         <td className="border p-2">{invite.nom}</td>
-                        <td className="border p-2">
-                          {invite.groupe || ''}
-                        </td>
+                        <td className="border p-2">{invite.groupe || ''}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -198,9 +176,7 @@ export default function ClientPage() {
                 onChange={(e) => setFiltreGroupe(e.target.value)}
               />
               <button
-                onClick={() =>
-                  exportCSV(invitesFiltres, 'reponses_filtrees.csv')
-                }
+                onClick={() => exportCSV(invitesFiltres, 'reponses_filtrees.csv')}
                 className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
               >
                 📤 Exporter les réponses
@@ -222,30 +198,16 @@ export default function ClientPage() {
               <tbody>
                 {invitesFiltres.map((invite) => (
                   <tr key={invite.id} className="border-t">
+                    <td className="px-4 py-2">{invite.prenom} {invite.nom}</td>
                     <td className="px-4 py-2">
-                      {invite.prenom} {invite.nom}
+                      {invite.participation_Samedi === null ? '❓' : invite.participation_Samedi ? '✅' : '❌'}
                     </td>
                     <td className="px-4 py-2">
-                      {invite.participation_Samedi === null
-                        ? '❓'
-                        : invite.participation_Samedi
-                        ? '✅'
-                        : '❌'}
-                    </td>
-                    <td className="px-4 py-2">
-                      {invite.participation_Retour === null
-                        ? '❓'
-                        : invite.participation_Retour
-                        ? '✅'
-                        : '❌'}
+                      {invite.participation_Retour === null ? '❓' : invite.participation_Retour ? '✅' : '❌'}
                     </td>
                     <td className="px-4 py-2">{invite.repas || '—'}</td>
-                    <td className="px-4 py-2">
-                      {invite.logement ? '🛏️' : '—'}
-                    </td>
-                    <td className="px-4 py-2">
-                      {invite.commentaire || '—'}
-                    </td>
+                    <td className="px-4 py-2">{invite.logement ? '🛏️' : '—'}</td>
+                    <td className="px-4 py-2">{invite.commentaire || '—'}</td>
                     <td className="px-4 py-2">{invite.groupe || ''}</td>
                   </tr>
                 ))}
@@ -255,5 +217,5 @@ export default function ClientPage() {
         )}
       </div>
     </div>
-  )
+  );
 }
