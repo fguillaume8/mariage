@@ -17,7 +17,7 @@ interface Invite {
   groupe?: string
 }
 
-export default function Page() {
+export default function ClientPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [invites, setInvites] = useState<Invite[] | null>(null)
@@ -46,22 +46,28 @@ export default function Page() {
 
   if (!invites) return <div className="p-6">Chargement...</div>
 
-  const repondus = invites.filter(invite =>
-    invite.participation_Samedi !== null ||
-    invite.participation_Retour !== null ||
-    invite.repas !== null
+  const repondus = invites.filter(
+    (invite) =>
+      invite.participation_Samedi !== null ||
+      invite.participation_Retour !== null ||
+      invite.repas !== null
   )
 
   const invitesFiltres = repondus.filter((invite) => {
-    const matchNom = `${invite.prenom} ${invite.nom}`.toLowerCase().includes(filtreNom.toLowerCase())
-    const matchGroupe = filtreGroupe ? invite.groupe?.toLowerCase().includes(filtreGroupe.toLowerCase()) : true
+    const matchNom = `${invite.prenom} ${invite.nom}`
+      .toLowerCase()
+      .includes(filtreNom.toLowerCase())
+    const matchGroupe = filtreGroupe
+      ? invite.groupe?.toLowerCase().includes(filtreGroupe.toLowerCase())
+      : true
     return matchNom && matchGroupe
   })
 
-  const nonRepondus = invites.filter(invite =>
-    invite.participation_Samedi === null &&
-    invite.participation_Retour === null &&
-    invite.repas === null
+  const nonRepondus = invites.filter(
+    (invite) =>
+      invite.participation_Samedi === null &&
+      invite.participation_Retour === null &&
+      invite.repas === null
   )
 
   const total = invites.length
@@ -73,9 +79,9 @@ export default function Page() {
     if (!data || data.length === 0) return
 
     const headers = Object.keys(data[0]).join(',')
-    const rows = data.map(row =>
+    const rows = data.map((row) =>
       Object.values(row)
-        .map(value =>
+        .map((value) =>
           typeof value === 'string' && value.includes(',')
             ? `"${value.replace(/"/g, '""')}"`
             : value
@@ -90,7 +96,9 @@ export default function Page() {
 
   return (
     <div className="min-h-screen bg-gray-50 p-10 space-y-8">
-      <h1 className="text-3xl font-bold mb-4">👰‍♀️🤵‍♂️ Résumé des réponses RSVP</h1>
+      <h1 className="text-3xl font-bold mb-4">
+        👰‍♀️🤵‍♂️ Résumé des réponses RSVP
+      </h1>
 
       {/* 🧮 Statistiques */}
       <div>
@@ -102,10 +110,18 @@ export default function Page() {
         </button>
         {showStats && (
           <div className="bg-white p-4 rounded shadow text-sm">
-            <p><strong>🎉 Total invités :</strong> {total}</p>
-            <p><strong>✅ Présents samedi :</strong> {totalSamedi}</p>
-            <p><strong>🏁 Présents au retour :</strong> {totalRetour}</p>
-            <p><strong>🛏️ Besoin logement :</strong> {totalLogement}</p>
+            <p>
+              <strong>🎉 Total invités :</strong> {total}
+            </p>
+            <p>
+              <strong>✅ Présents samedi :</strong> {totalSamedi}
+            </p>
+            <p>
+              <strong>🏁 Présents au retour :</strong> {totalRetour}
+            </p>
+            <p>
+              <strong>🛏️ Besoin logement :</strong> {totalLogement}
+            </p>
           </div>
         )}
       </div>
@@ -137,11 +153,13 @@ export default function Page() {
                     </tr>
                   </thead>
                   <tbody>
-                    {nonRepondus.map(invite => (
+                    {nonRepondus.map((invite) => (
                       <tr key={invite.id}>
                         <td className="border p-2">{invite.prenom}</td>
                         <td className="border p-2">{invite.nom}</td>
-                        <td className="border p-2">{invite.groupe || ''}</td>
+                        <td className="border p-2">
+                          {invite.groupe || ''}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -180,7 +198,9 @@ export default function Page() {
                 onChange={(e) => setFiltreGroupe(e.target.value)}
               />
               <button
-                onClick={() => exportCSV(invitesFiltres, 'reponses_filtrees.csv')}
+                onClick={() =>
+                  exportCSV(invitesFiltres, 'reponses_filtrees.csv')
+                }
                 className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
               >
                 📤 Exporter les réponses
@@ -202,16 +222,30 @@ export default function Page() {
               <tbody>
                 {invitesFiltres.map((invite) => (
                   <tr key={invite.id} className="border-t">
-                    <td className="px-4 py-2">{invite.prenom} {invite.nom}</td>
                     <td className="px-4 py-2">
-                      {invite.participation_Samedi === null ? '❓' : invite.participation_Samedi ? '✅' : '❌'}
+                      {invite.prenom} {invite.nom}
                     </td>
                     <td className="px-4 py-2">
-                      {invite.participation_Retour === null ? '❓' : invite.participation_Retour ? '✅' : '❌'}
+                      {invite.participation_Samedi === null
+                        ? '❓'
+                        : invite.participation_Samedi
+                        ? '✅'
+                        : '❌'}
+                    </td>
+                    <td className="px-4 py-2">
+                      {invite.participation_Retour === null
+                        ? '❓'
+                        : invite.participation_Retour
+                        ? '✅'
+                        : '❌'}
                     </td>
                     <td className="px-4 py-2">{invite.repas || '—'}</td>
-                    <td className="px-4 py-2">{invite.logement ? '🛏️' : '—'}</td>
-                    <td className="px-4 py-2">{invite.commentaire || '—'}</td>
+                    <td className="px-4 py-2">
+                      {invite.logement ? '🛏️' : '—'}
+                    </td>
+                    <td className="px-4 py-2">
+                      {invite.commentaire || '—'}
+                    </td>
                     <td className="px-4 py-2">{invite.groupe || ''}</td>
                   </tr>
                 ))}

@@ -5,12 +5,11 @@ import type { Metadata } from "next";
 export async function generateMetadata({
   searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] }>;
+  searchParams: { [key: string]: string | string[] | undefined };
 }): Promise<Metadata> {
-  const resolvedSearchParams = await searchParams;
-  const token = Array.isArray(resolvedSearchParams.token)
-    ? resolvedSearchParams.token[0]
-    : resolvedSearchParams.token;
+  const token = Array.isArray(searchParams.token)
+    ? searchParams.token[0]
+    : searchParams.token;
 
   if (token === "ton_token_secret") {
     return {
@@ -26,15 +25,14 @@ export async function generateMetadata({
 }
 
 // 🔹 Composant principal de la page
-export default async function Page({
-  searchParams, 
+export default function Page({
+  searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] }>;
+  searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const resolvedSearchParams = await searchParams;
-  const token = Array.isArray(resolvedSearchParams.token)
-    ? resolvedSearchParams.token[0]
-    : resolvedSearchParams.token;
+  const token = Array.isArray(searchParams.token)
+    ? searchParams.token[0]
+    : searchParams.token;
 
   const SECRET_TOKEN = "ton_token_secret";
 
