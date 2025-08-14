@@ -27,7 +27,7 @@ export async function generateMetadata({
 
 // 🔹 Composant principal de la page
 export default async function Page({
-  searchParams,
+  searchParams, 
 }: {
   searchParams: Promise<{ [key: string]: string | string[] }>;
 }) {
