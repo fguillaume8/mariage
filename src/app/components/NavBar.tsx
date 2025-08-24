@@ -12,9 +12,10 @@ export default function NavBar() {
   const router = useRouter()
 
   const [isTemoin, setIsTemoin] = useState(false)
+  const [isMarie, setIsMarie] = useState(false)
 
   useEffect(() => {
-    const checkTemoin = async () => {
+    const checkProfil = async () => {
       if (!ids || ids.length === 0) return
 
       const { data, error } = await supabase
@@ -23,12 +24,12 @@ export default function NavBar() {
         .in('id', ids)
 
       if (!error && data) {
-        const temoinPresent = data.some((inv) => inv.profil === 'temoin')
-        setIsTemoin(temoinPresent)
+        setIsTemoin(data.some((inv) => inv.profil === 'temoin'))
+        setIsMarie(data.some((inv) => inv.profil === 'Nous'))
       }
     }
 
-    checkTemoin()
+    checkProfil()
   }, [ids])
 
   const handleLogout = () => {
@@ -37,7 +38,8 @@ export default function NavBar() {
     router.push('/')
   }
 
-  const baseLinks = [
+  // Liens de base
+  const links = [
     { href: '/rsvp', label: 'RSVP' },
     { href: '/faq', label: 'FAQ' },
     { href: '/infos', label: 'Infos' },
@@ -46,10 +48,13 @@ export default function NavBar() {
     { href: '/contact', label: 'Nous contacter' },
   ]
 
-  // Ajout conditionnel du lien "Temoins"
-  const links = isTemoin
-    ? [...baseLinks, { href: '/temoin', label: 'Témoins' }]
-    : baseLinks
+  // Ajout conditionnel
+  if (isTemoin) {
+    links.push({ href: '/temoin', label: 'Témoins' })
+  }
+  if (isMarie) {
+    links.push({ href: '/marie', label: 'Mariés' })
+  }
 
   return (
     <nav className="bg-white dark:bg-gray-900 text-black dark:text-white shadow-md">
@@ -58,8 +63,8 @@ export default function NavBar() {
           <Link
             key={href}
             href={href}
-            className={`hover:underline hover:text-pink-600 transition ${
-              pathname.startsWith(href) ? 'font-bold text-pink-600' : ''
+            className={`hover:underline hover:text-mariage-blue transition ${
+              pathname.startsWith(href) ? 'font-bold text-mariage-blue' : ''
             }`}
           >
             {label}
@@ -67,7 +72,7 @@ export default function NavBar() {
         ))}
         <button
           onClick={handleLogout}
-          className="bg-white text-pink-600 px-3 py-1 rounded hover:bg-pink-100"
+           className="bg-white text-mariage-blue px-3 py-1 rounded hover:bg-mariage-blue/10"
         >
           Déconnexion
         </button>
