@@ -1,10 +1,10 @@
 import React, { Suspense } from 'react'
-import TemoinClient from './marieClient.tsx'
+import MarieClient from './marieClient'
 
 export default function MariePage() {
   return (
     <Suspense fallback={<p>Chargement...</p>}>
-      <TemoinClient />
+      <MarieClient />
     </Suspense>
   )
 }
