@@ -63,8 +63,8 @@ export default function NavBar() {
           <Link
             key={href}
             href={href}
-            className={`hover:underline hover:text-mariage-blue transition ${
-              pathname.startsWith(href) ? 'font-bold text-mariage-blue' : ''
+            className={`hover:underline hover:text-[#7287B1] transition ${
+              pathname.startsWith(href) ? 'font-bold text-[#7287B1]' : ''
             }`}
           >
             {label}
@@ -72,7 +72,7 @@ export default function NavBar() {
         ))}
         <button
           onClick={handleLogout}
-           className="bg-white text-mariage-blue px-3 py-1 rounded hover:bg-mariage-blue/10"
+           className="bg-white text-[#7287B1] px-3 py-1 rounded hover:[#7287B1]/10"
         >
           Déconnexion
         </button>

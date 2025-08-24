@@ -107,7 +107,7 @@ export default function Home() {
         />
         <button
           type="submit"
-          className="w-full bg-pink-600 text-white p-2 rounded hover:bg-pink-700"
+          className="w-full bg-[#7287B1] text-white p-2 rounded hover:bg-[#7287B1]"
         >
           Accéder au formulaire
         </button>
@@ -139,7 +139,7 @@ export default function Home() {
               </button>
               <button
                 onClick={handleModalConfirm}
-                className="px-4 py-2 bg-pink-600 text-white rounded hover:bg-pink-700"
+                className="px-4 py-2 bg-[#7287B1] text-white rounded hover:bg-[#7287B1]"
               >
                 Valider
               </button>

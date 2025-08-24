@@ -3,22 +3,23 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/app/lib/supabaseClient'
 
-interface Invite {
+
+/*interface Invite {
   id: string
   nom: string
   prenom: string
-}
+}*/
 
 interface Question {
   id_question: number
   question: string
 }
 
-interface Reponse {
+/*interface Reponse {
   id_invite: string
   id_question: number
   reponse: 'elle' | 'lui'
-}
+}*/
 
 interface Ligne {
   id: string
