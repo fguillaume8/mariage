@@ -1,14 +1,28 @@
-import { redirect } from 'next/navigation'
+// Rendu dynamique pour éviter toute tentative de pré-rendu statique
+export const dynamic = 'force-dynamic';
 
-export default function Page({ searchParams }: { searchParams: { [key: string]: string | undefined } }) {
-  const token = searchParams?.token
+import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
+import ClientView from './ClientView';
 
-  const SECRET_TOKEN = 'ton_token_secret' // ← à personnaliser
+export default function Page({
+  searchParams,
+}: {
+  searchParams: Record<string, string | string[] | undefined>;
+}) {
+  const raw = searchParams.token;
+  const token = Array.isArray(raw) ? raw[0] : raw;
+  const SECRET_TOKEN = 'ton_token_secret';
 
-  if (token !== SECRET_TOKEN) {
-    redirect('/')
+  // ✅ Validation du token côté serveur (pas de hook client nécessaire)
+  if (!token || token !== SECRET_TOKEN) {
+    redirect('/');
   }
 
-  // Redirige vers la vraie page client protégée avec le token
-  redirect(`/marie/view?token=${token}`)
+  // On peut passer le token en prop si tu en as besoin, sinon inutile
+  return (
+    <Suspense fallback={<div className="p-6">Chargement…</div>}>
+      <ClientView />
+    </Suspense>
+  );
 }
