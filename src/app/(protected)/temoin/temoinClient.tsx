@@ -64,18 +64,19 @@ export default function PageTemoin() {
       // 4. Groupement par invité
       const mapLignes: Record<string, Ligne> = {}
 
-      filtres.forEach(r => {
-        const id = r.id_invite
-        if (!mapLignes[id]) {
-          mapLignes[id] = {
-            id,
-            nom: r.invites.nom,
-            prenom: r.invites.prenom,
-            reponses: {},
-          }
+    filtres.forEach(r => {
+      const id = r.id_invite
+      if (!mapLignes[id]) {
+        const invite = r.invites[0] // <-- prendre le premier élément du tableau
+        mapLignes[id] = {
+          id,
+          nom: invite?.nom || '',    // fallback si undefined
+          prenom: invite?.prenom || '',
+          reponses: {},
         }
-        mapLignes[id].reponses[r.id_question] = r.reponse
-      })
+      }
+      mapLignes[id].reponses[r.id_question] = r.reponse
+    })
 
       setLignes(Object.values(mapLignes))
     }
