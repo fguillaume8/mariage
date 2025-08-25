@@ -117,7 +117,7 @@ const handleChange = (id: string, field: 'participation_Samedi' | 'participation
 
   // Formulaire RSVP
   return (
-    <div className="relative w-full h-screen">
+<div className="relative w-full h-screen bg-[#f7f4eb]">
   <Image
     src="/image/mariage_pierre.jpg"
     alt="Image de fond"
@@ -127,36 +127,43 @@ const handleChange = (id: string, field: 'participation_Samedi' | 'participation
     style={{ position: 'absolute' }}
   />
 
-  {/* Conteneur centré */}
-  <div className="relative z-10 flex justify-center items-center h-full px-4">
-    <div className="bg-white/80 backdrop-blur-md rounded-xl shadow-2xl p-8 max-w-2xl w-full overflow-y-auto max-h-[90vh]">
+  {/* Conteneur décalé à droite avec gradient léger et hover */}
+  <div className="relative z-10 flex justify-start items-center h-full px-4">
+    <div className="ml-[20vw] w-[90vw] max-w-2xl max-h-[90vh] overflow-y-auto
+                    p-8 rounded-2xl shadow-2xl backdrop-blur-xl
+                    bg-gradient-to-br from-[#f7f4eb]/30 via-[#b68542]/20 to-powderblue/20
+                    border border-powderblue/20
+                    transition-all duration-500 hover:scale-[1.02] hover:shadow-3xl">
 
-      <h1 className="text-3xl font-bold text-center text-pink-600 mb-6">Répondez à l&apos;invitation</h1>
+      <h1 className="text-3xl font-bold text-center text-powderblue mb-6 drop-shadow-md">
+        Répondez à l&apos;invitation
+      </h1>
 
       {invites.map(invite => (
-        <div key={invite.id} className="mb-6 p-4 border rounded bg-white/60">
-          <h2 className="font-semibold text-lg">{invite.prenom} {invite.nom}</h2>
+        <div key={invite.id} className="mb-6 p-4 rounded-xl bg-white/40 backdrop-blur-md border border-powderblue/20 shadow-inner transition-all duration-300 hover:scale-[1.01]">
+          <h2 className="font-semibold text-lg text-powderblue">{invite.prenom} {invite.nom}</h2>
 
           {/* Samedi */}
-          <label className="block mt-2">
-            <span className="mr-2">Présent(e) le samedi?</span>
+          <label className="block mt-3 flex items-center justify-between">
+            <span className="font-medium text-powderblue">Présent(e) le samedi?</span>
             <select
               value={reponses[invite.id]?.participation_Samedi ? 'oui' : 'non'}
               onChange={(e) => handleChange(invite.id, 'participation_Samedi', e.target.value === 'oui')}
-              className="border rounded px-2 py-1"
+              className="border border-powderblue/40 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-[#b68542]/50 bg-white/60 backdrop-blur-sm w-24"
             >
               <option value="oui">Oui</option>
               <option value="non">Non</option>
             </select>
           </label>
 
+
           {/* Retour */}
-          <label className="block mt-2">
-            <span className="mr-2">Présent(e) au retour?</span>
+          <label className="block mt-3 flex items-center justify-between">
+            <span className="font-medium text-powderblue">Présent(e) au retour?</span>
             <select
               value={reponses[invite.id]?.participation_Retour ? 'oui' : 'non'}
               onChange={(e) => handleChange(invite.id, 'participation_Retour', e.target.value === 'oui')}
-              className="border rounded px-2 py-1"
+              className="border border-powderblue/40 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-[#b68542]/50 bg-white/60 backdrop-blur-sm w-24"
             >
               <option value="oui">Oui</option>
               <option value="non">Non</option>
@@ -165,13 +172,13 @@ const handleChange = (id: string, field: 'participation_Samedi' | 'participation
 
           {invite.profil === 'logement_Oui' && (
             <div className="mt-4">
-              <h3 className="font-semibold mb-2">Besoin de logement ?</h3>
-              <label className="block mt-2">
-                <span className="mr-2">Souhaitez-vous être hébergé ?</span>
+              <h3 className="font-semibold mb-2 text-powderblue">Besoin de logement ?</h3>
+              <label className="block mt-3 flex items-center justify-between">
+                <span className="mr-2 font-medium text-powderblue">Souhaitez-vous être hébergé ?</span>
                 <select
                   value={reponses[invite.id]?.logement ? 'oui' : 'non'}
                   onChange={(e) => handleChange(invite.id, 'logement', e.target.value === 'oui')}
-                  className="border rounded px-2 py-1"
+                  className="border border-powderblue/40 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-[#b68542]/50 bg-white/60 backdrop-blur-sm w-24"
                 >
                   <option value="non">Non</option>
                   <option value="oui">Oui</option>
@@ -181,27 +188,27 @@ const handleChange = (id: string, field: 'participation_Samedi' | 'participation
           )}
 
           {/* Choix repas */}
-          <label className="block mt-2">
-            <span>Choix du repas</span>
+          <label className="block mt-3">
+            <span className="font-medium text-powderblue">Choix du repas</span>
             <select
               value={reponses[invite.id]?.repas || ''}
               onChange={(e) => handleChange(invite.id, 'repas', e.target.value)}
-              className="mt-1 p-2 border rounded w-full"
+              className="mt-1 p-2 border border-powderblue/40 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-[#b68542]/50 bg-white/60 backdrop-blur-sm"
             >
               <option value="">-- Choisir un repas --</option>
               <option value="viande">Viande</option>
-              <option value="poisson">Poisson</option>
               <option value="vegetarien">Végétarien</option>
             </select>
           </label>
 
           {/* Message libre */}
-          <label className="block mt-2">
-            <span>Un petit message ?</span>
+          <label className="block mt-3">
+            <span className="font-medium text-powderblue">Un petit message ? Une allergie ? Dites le nous ! </span>
             <textarea
               value={reponses[invite.id]?.commentaire || ''}
               onChange={(e) => handleChange(invite.id, 'commentaire', e.target.value)}
-              className="w-full mt-1 p-2 border rounded"
+              className="w-full mt-1 p-2 border border-powderblue/40 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#b68542]/50 bg-white/60 backdrop-blur-sm"
+              rows={3}
             />
           </label>
         </div>
@@ -210,13 +217,17 @@ const handleChange = (id: string, field: 'participation_Samedi' | 'participation
       <div className="text-center">
         <button
           onClick={handleSubmit}
-          className="bg-pink-500 hover:bg-pink-600 text-white font-semibold px-6 py-2 rounded-full mt-4 shadow-md"
+          className="bg-[#b68542] hover:bg-powderblue text-white font-semibold px-6 py-2 rounded-full mt-4 shadow-lg transition-all duration-300 hover:shadow-2xl"
         >
           Envoyer les réponses
         </button>
       </div>
+
     </div>
   </div>
 </div>
+
+
+
   )
 }

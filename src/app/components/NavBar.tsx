@@ -48,35 +48,37 @@ export default function NavBar() {
     { href: '/contact', label: 'Nous contacter' },
   ]
 
-  // Ajout conditionnel
-  if (isTemoin) {
-    links.push({ href: '/temoin', label: 'Témoins' })
-  }
-  if (isMarie) {
-    links.push({ href: '/marie', label: 'Mariés' })
-  }
+  if (isTemoin) links.push({ href: '/temoin', label: 'Témoins' })
+  if (isMarie) links.push({ href: '/marie', label: 'Mariés' })
 
   return (
-    <nav className="bg-white dark:bg-gray-900 text-black dark:text-white shadow-md">
-      <div className="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center gap-4">
-        {links.map(({ href, label }) => (
-          <Link
-            key={href}
-            href={href}
-            className={`hover:underline hover:text-[#7287B1] transition ${
-              pathname.startsWith(href) ? 'font-bold text-[#7287B1]' : ''
+    <nav className="bg-[#fafafa] shadow-md border-2 border-[#b68542] rounded-md">
+  <div className="max-w-8xl mx-auto px-4 py-3 flex justify-between items-center gap-8">
+    <div className="flex flex-wrap gap-10">
+      {links.map(({ href, label }) => (
+        <Link
+          key={href}
+          href={href}
+          className={`px-3 py-1 transition-all duration-300
+            ${
+              pathname.startsWith(href)
+                ? 'bg-[#7287B1]/20 text-[#7287B1] font-semibold shadow-sm'
+                : 'text-[#7287B1] hover:bg-[#b68542]/20 hover:text-[#b68542] shadow-sm hover:shadow-md'
             }`}
-          >
-            {label}
-          </Link>
-        ))}
-        <button
-          onClick={handleLogout}
-           className="bg-white text-[#7287B1] px-3 py-1 rounded hover:[#7287B1]/10"
         >
-          Déconnexion
-        </button>
-      </div>
-    </nav>
+          {label}
+        </Link>
+      ))}
+    </div>
+
+    <button
+      onClick={handleLogout}
+      className="ml-auto bg-[#b68542] text-white px-3 py-1 rounded-md hover:bg-[#7287B1] transition-colors duration-300 shadow-sm hover:shadow-md"
+    >
+      Déconnexion
+    </button>
+  </div>
+</nav>
+
   )
 }
