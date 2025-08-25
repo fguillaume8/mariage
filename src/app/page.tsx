@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client'
 
 import { useState, useEffect  } from 'react'
@@ -85,34 +86,68 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-4">
-      <h1 className="text-3xl font-bold mb-4">Bienvenue sur notre mariage 💍</h1>
+    <main className="min-h-screen flex flex-col">
+  {/* Fond avec bandes ocre */}
+  <div className="flex min-h-screen">
+{/* Bande gauche */}
+<div className="hidden md:block w-[15%] bg-yellowfade border-r-2 border-[#b68542]" />
 
-      <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4">
-        <input
-          type="text"
-          placeholder="Prénom"
-          value={prenom}
-          onChange={(e) => setPrenom(e.target.value)}
-          className="w-full p-2 border rounded"
-          required
-        />
-        <input
-          type="text"
-          placeholder="Nom"
-          value={nom}
-          onChange={(e) => setNom(e.target.value)}
-          className="w-full p-2 border rounded"
-          required
-        />
-        <button
-          type="submit"
-          className="w-full bg-[#7287B1] text-white p-2 rounded hover:bg-[#7287B1]"
-        >
-          Accéder au formulaire
-        </button>
-        {erreur && <p className="text-red-600">{erreur}</p>}
-      </form>
+
+    {/* Contenu central (fond blanc) */}
+    <div className="flex-1 bg-white flex flex-col">
+      {/* Première div : titre + logo */}
+      <div className="flex w-full h-[40%] items-center justify-between p-8 bg-red-100">
+        {/* Gauche */}
+        <div className="flex flex-col justify-center w-full h-full bg-green-100">
+          <h1 className=" text-4xl text-[#7287B1] font-tan whitespace-nowrap text-center">  ALICE &amp; GUILLAUME</h1>
+          <h1 className="text-4xl text-[#7287B1] ml-8 mt-2 font-tan ml-8 mt-8 text-center">    29.08.2026  </h1>
+        </div>
+        {/* Droite */}
+        <div className="flex justify-end items-center bg-blue-100 h-full">
+          <img
+            src="image/logo.svg"
+            alt="Logo mariage"
+            className="h-150 w-auto object-contain"
+          />
+        </div>
+      </div>
+
+      {/* Deuxième div : formulaire */}
+      <div className="flex-1 flex justify-center items-center bg-yellow-100">
+        <div className=" flex-1 flex justify-center bg-purple-100" >
+          <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4">
+            <img src="/image/feuillage_acc.svg" alt="Décoration feuillage" className="w-full mb-0  object-contain"/>
+          <input
+            type="text"
+            placeholder="Prénom"
+            value={prenom}
+            onChange={(e) => setPrenom(e.target.value)}
+             className="w-full p-3 border border-[#b68542]/40 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7287B1]"
+            required
+          />
+          <input
+            type="text"
+            placeholder="Nom"
+            value={nom}
+            onChange={(e) => setNom(e.target.value)}
+            className="w-full p-2 border rounded"
+            required
+          />
+          <button
+            type="submit"
+            className="w-full bg-[#7287B1] text-white p-2 rounded hover:bg-[#5d6d94]"
+          >
+            Accéder au formulaire
+          </button>
+          {erreur && <p className="text-red-600">{erreur}</p>}
+        </form>
+        </div>
+      </div>
+    </div>
+
+    {/* Bande droite */}
+    <div className="hidden md:block w-[15%] bg-yellowfade border-l-2 border-[#b68542]" />
+  </div>
 
       {/* Modal */}
       {showModal && (

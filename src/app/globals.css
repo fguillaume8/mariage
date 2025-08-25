@@ -15,6 +15,7 @@
   --color-ocre: #b68542;
   --color-powderblue: #7287B1;
   --color-yellowfade: #f7f4eb;
+  --font-tan : TAN
 }
 
 /*
@@ -29,4 +30,11 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+@font-face {
+  font-family: 'TAN';
+  src: url('/font/tan-mon-cheri.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
 }
