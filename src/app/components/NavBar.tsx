@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { useInvite } from '../context/InviteContext'
 import { supabase } from '../lib/supabaseClient'
 
@@ -11,11 +11,11 @@ export default function NavBar() {
   const pathname = usePathname()
   const router = useRouter()
 
+  
   const [menuOpen, setMenuOpen] = useState(false)
   const [isTemoin, setIsTemoin] = useState(false)
   const [isMarie, setIsMarie] = useState(false)
 
-  // Détermination des profils
   useEffect(() => {
     const checkProfil = async () => {
       if (!ids || ids.length === 0) return
@@ -40,7 +40,7 @@ export default function NavBar() {
     router.push('/')
   }
 
-  // Liens de navigation
+  // Liens de base
   const links = [
     { href: '/rsvp', label: 'RSVP' },
     { href: '/faq', label: 'FAQ' },
@@ -54,10 +54,9 @@ export default function NavBar() {
   if (isMarie) links.push({ href: '/marie', label: 'Mariés' })
 
   return (
-    <nav className="bg-[#f7f4eb] border-2 border-[#b68542] rounded-md shadow-md">
+      <nav className="bg-[#f7f4eb] border-2 border-[#b68542] rounded-md shadow-md">
       <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-        {/* Logo / Titre si besoin */}
-        <div className="text-[#7287B1] font-bold text-lg">Mariage</div>
+
 
         {/* Desktop Links */}
         <div className="hidden md:flex flex-wrap gap-6 items-center">
@@ -121,5 +120,6 @@ export default function NavBar() {
         </div>
       )}
     </nav>
+
   )
 }
