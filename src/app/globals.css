@@ -15,7 +15,10 @@
   --color-ocre: #b68542;
   --color-powderblue: #7287B1;
   --color-yellowfade: #f7f4eb;
-  --font-tan : TAN
+  --color-greyfade: #d9d9d9;
+  --font-tan : TAN;
+  --font-alike: "Alike", serif;
+  --tracking-extra: 0.2em;
 }
 
 /*

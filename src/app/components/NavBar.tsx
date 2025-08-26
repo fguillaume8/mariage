@@ -54,33 +54,41 @@ export default function NavBar() {
   if (isMarie) links.push({ href: '/marie', label: 'Mariés' })
 
   return (
-      <nav className="bg-[#f7f4eb] border-2 border-[#b68542] rounded-md shadow-md">
-      <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+      <nav className="bg-yellowfade border-t-6 border-b-6 border-ocre rounded-md shadow-md">
+      <div className="max-w-8xl mx-auto px-4 py-1 flex items-center justify-between ">
 
 
         {/* Desktop Links */}
-        <div className="hidden md:flex flex-wrap gap-6 items-center">
+
+<div className="flex justify-end items-center relative overflow-visible h-7">
+  <img
+    src="image/logo.svg"
+    alt="Logo mariage"
+    className="h-[140%] object-contain "
+  />
+</div>
+        <div className="hidden md:flex flex-wrap gap-18 items-center font-alike text-xl">
           {links.map(({ href, label }) => (
             <Link
               key={href}
               href={href}
-              className={`px-3 py-1 rounded-md transition-colors duration-300
+              className={`px-3 py-1 rounded-md transition-colors duration-300 font-alike text-xl
                 ${
                   pathname.startsWith(href)
-                    ? 'bg-[#7287B1]/20 text-[#7287B1] font-semibold'
+                    ? 'text-ocre font-semibold'
                     : 'text-[#7287B1] hover:bg-[#b68542]/20 hover:text-[#b68542]'
                 }`}
             >
               {label}
             </Link>
           ))}
-          <button
+        </div>
+                  <button
             onClick={handleLogout}
             className="ml-4 bg-[#b68542] text-white px-4 py-1 rounded-md hover:bg-[#7287B1] transition-colors duration-300"
           >
             Déconnexion
           </button>
-        </div>
 
         {/* Mobile Hamburger */}
         <div className="md:hidden flex items-center">
