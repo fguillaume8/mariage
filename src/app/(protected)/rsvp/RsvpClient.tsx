@@ -117,30 +117,20 @@ const handleChange = (id: string, field: 'participation_Samedi' | 'participation
 
   // Formulaire RSVP
   return (
-<div className="relative w-full h-screen bg-[#f7f4eb]">
-  <Image
-    src="/image/mariage_pierre.jpg"
-    alt="Image de fond"
-    fill
-    priority
-    className="object-cover z-0"
-    style={{ position: 'absolute' }}
-  />
-
-  {/* Conteneur décalé à droite avec gradient léger et hover */}
-  <div className="relative z-10 flex justify-start items-center h-full px-4">
-    <div className="ml-[20vw] w-[90vw] max-w-2xl max-h-[90vh] overflow-y-auto
-                    p-8 rounded-2xl shadow-2xl backdrop-blur-xl
+<div className="flex flex-1 min-h-[calc(100vh-57px)] w-full bg-[#f7f4eb]">
+  {/* Colonne gauche : RSVP */}
+  <div className="w-2/5 h-screen-64px  flex justify-center items-center p-5">
+    <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto
+                    p-8 rounded-2xl shadow-2xl 
                     bg-gradient-to-br from-[#f7f4eb]/30 via-[#b68542]/20 to-powderblue/20
                     border border-powderblue/20
-                    transition-all duration-500 hover:scale-[1.02] hover:shadow-3xl">
-
+                     ">
       <h1 className="text-3xl font-bold text-center text-powderblue mb-6 drop-shadow-md">
         Répondez à l&apos;invitation
       </h1>
 
       {invites.map(invite => (
-        <div key={invite.id} className="mb-6 p-4 rounded-xl bg-white/40 backdrop-blur-md border border-powderblue/20 shadow-inner transition-all duration-300 hover:scale-[1.01]">
+        <div key={invite.id} className="mb-6 p-4 rounded-xl bg-white/40 border border-powderblue/20 shadow-inner transition-all duration-300 hover:scale-[1.01]">
           <h2 className="font-semibold text-lg text-powderblue">{invite.prenom} {invite.nom}</h2>
 
           {/* Samedi */}
@@ -149,13 +139,12 @@ const handleChange = (id: string, field: 'participation_Samedi' | 'participation
             <select
               value={reponses[invite.id]?.participation_Samedi ? 'oui' : 'non'}
               onChange={(e) => handleChange(invite.id, 'participation_Samedi', e.target.value === 'oui')}
-              className="border border-powderblue/40 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-[#b68542]/50 bg-white/60 backdrop-blur-sm w-24"
+              className="border border-powderblue/40 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-[#b68542]/50 bg-white/60  w-24"
             >
               <option value="oui">Oui</option>
               <option value="non">Non</option>
             </select>
           </label>
-
 
           {/* Retour */}
           <label className="block mt-3 flex items-center justify-between">
@@ -163,7 +152,7 @@ const handleChange = (id: string, field: 'participation_Samedi' | 'participation
             <select
               value={reponses[invite.id]?.participation_Retour ? 'oui' : 'non'}
               onChange={(e) => handleChange(invite.id, 'participation_Retour', e.target.value === 'oui')}
-              className="border border-powderblue/40 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-[#b68542]/50 bg-white/60 backdrop-blur-sm w-24"
+              className="border border-powderblue/40 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-[#b68542]/50 bg-white/60  w-24"
             >
               <option value="oui">Oui</option>
               <option value="non">Non</option>
@@ -174,11 +163,11 @@ const handleChange = (id: string, field: 'participation_Samedi' | 'participation
             <div className="mt-4">
               <h3 className="font-semibold mb-2 text-powderblue">Besoin de logement ?</h3>
               <label className="block mt-3 flex items-center justify-between">
-                <span className="mr-2 font-medium text-powderblue">Souhaitez-vous être hébergé ?</span>
+                <span className="mr-2 font-medium text-powderblue">Souhaitez-vous être hébergé du vendredi au samedi ?</span>
                 <select
                   value={reponses[invite.id]?.logement ? 'oui' : 'non'}
                   onChange={(e) => handleChange(invite.id, 'logement', e.target.value === 'oui')}
-                  className="border border-powderblue/40 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-[#b68542]/50 bg-white/60 backdrop-blur-sm w-24"
+                  className="border border-powderblue/40 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-[#b68542]/50 bg-white/60 w-24"
                 >
                   <option value="non">Non</option>
                   <option value="oui">Oui</option>
@@ -193,7 +182,7 @@ const handleChange = (id: string, field: 'participation_Samedi' | 'participation
             <select
               value={reponses[invite.id]?.repas || ''}
               onChange={(e) => handleChange(invite.id, 'repas', e.target.value)}
-              className="mt-1 p-2 border border-powderblue/40 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-[#b68542]/50 bg-white/60 backdrop-blur-sm"
+              className="mt-1 p-2 border border-powderblue/40 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-[#b68542]/50 bg-white/60 "
             >
               <option value="">-- Choisir un repas --</option>
               <option value="viande">Viande</option>
@@ -203,11 +192,11 @@ const handleChange = (id: string, field: 'participation_Samedi' | 'participation
 
           {/* Message libre */}
           <label className="block mt-3">
-            <span className="font-medium text-powderblue">Un petit message ? Une allergie ? Dites le nous ! </span>
+            <span className="font-medium text-powderblue">Une allergie ? Un petit message ? Dites le nous ! </span>
             <textarea
               value={reponses[invite.id]?.commentaire || ''}
               onChange={(e) => handleChange(invite.id, 'commentaire', e.target.value)}
-              className="w-full mt-1 p-2 border border-powderblue/40 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#b68542]/50 bg-white/60 backdrop-blur-sm"
+              className="w-full mt-1 p-2 border border-powderblue/40 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#b68542]/50 bg-white/60 "
               rows={3}
             />
           </label>
@@ -222,8 +211,18 @@ const handleChange = (id: string, field: 'participation_Samedi' | 'participation
           Envoyer les réponses
         </button>
       </div>
-
     </div>
+  </div>
+
+  {/* Colonne droite : Image */}
+  <div className="flex-1 relative">
+    <Image
+      src="/image/mariage_pierre.jpg"
+      alt="Image de fond"
+      fill
+      priority
+      className="object-cover"
+    />
   </div>
 </div>
 
