@@ -101,7 +101,7 @@ export default function Home() {
     <div className="flex flex-1 items-center justify-center">
       <div className="w-full max-w-xl p-6">
         <img
-          src="/image/feuillage_acc.svg"
+          src="/image/feuillage_acc.png"
           alt="Décoration feuillage"
           className="w-full mb-0 object-contain"
         />
@@ -141,7 +141,7 @@ export default function Home() {
           </div>
         </div>
         <img
-          src="/image/feuillage_acc.svg"
+          src="/image/feuillage_acc.png"
           alt="Décoration feuillage"
           className="w-full -mb-0 object-contain rotate-180 block"
         />
@@ -163,7 +163,7 @@ export default function Home() {
         {/* Droite */}
         <div className="flex justify-end items-center h-full">
           <img
-            src="image/logo.svg"
+            src="image/logo.png"
             alt="Logo mariage"
             className="h-150 w-auto object-contain"
           />
@@ -178,7 +178,7 @@ export default function Home() {
             className="w-full max-w-xl space-y-4 p-6 "
           >
             <img
-              src="/image/feuillage_acc.svg"
+              src="/image/feuillage_acc.png"
               alt="Décoration feuillage"
               className="w-full mb-0 object-contain"
             />
@@ -206,7 +206,7 @@ export default function Home() {
                 Accéder au formulaire
               </button>
               <img
-                src="/image/feuillage_acc.svg"
+                src="/image/feuillage_acc.png"
                 alt="Décoration feuillage"
                 className="w-full mt-0 object-contain rotate-180 block"
               />
