@@ -163,7 +163,7 @@ export default function Home() {
         {/* Droite */}
         <div className="flex justify-end items-center h-full">
           <img
-            src="image/logo-200.png"
+            src="image/Logo_200.png"
             alt="Logo mariage"
             className="h-150 w-auto object-contain"
           />
