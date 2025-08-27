@@ -62,7 +62,7 @@ export default function NavBar() {
 
 <div className="flex justify-end items-center relative overflow-visible h-7">
   <img
-    src="image/logo.png"
+    src="image/logo-200.png"
     alt="Logo mariage"
     className="h-[140%] object-contain "
   />
