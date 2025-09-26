@@ -112,15 +112,15 @@ useEffect(() => {
   const question = questions[step]
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4">
+    <div className="flex flex-col items-center justify-center min-h-screen p-4" >
       {selectingPerson && (
-        <div className="fixed inset-0 bg-white flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg max-w-sm w-full text-center border border-gray-300">
+        <div className="flex flex-col items-center justify-center min-h-screen p-4 ">
+          <div className="bg-white w-full max-w-5xl p-8 rounded-2xl shadow-lg text-center border border-gray-300">
             <h2 className="text-lg font-semibold mb-4">Qui répond au quiz ?</h2>
             {inviteNames.map((inv) => (
               <button
                 key={inv.id}
-                className="block w-full py-2 px-4 mb-2 bg-pink-500 text-white rounded hover:bg-pink-600"
+                className="block w-full py-2 px-4 mb-2 bg-powderblue text-white rounded hover:bg-pink-600"
                 onClick={() => {
                   setCurrentUserId(inv.id)
                   setSelectingPerson(false)
