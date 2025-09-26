@@ -27,9 +27,10 @@ export default function ContactPage() {
       } else {
         setError(true)
       }
-    } catch (err) {
-      setError(true)
-    }
+      } catch (err) {
+        console.error("Erreur d’envoi du formulaire :", err)
+        setError(true)
+      }
   }
 
   return (
