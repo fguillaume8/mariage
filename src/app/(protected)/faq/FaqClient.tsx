@@ -62,7 +62,7 @@ export default function FaqClient() {
     }
   ]
 
-  const [openIndex, setOpenIndex] = useState(null)
+  const [openIndex, setOpenIndex] = useState<string | null>(null)
 
   
   return (
