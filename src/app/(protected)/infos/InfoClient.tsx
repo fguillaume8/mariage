@@ -43,16 +43,34 @@ useEffect(() => {
       title: 'Vendredi 28 août',
       description: 'Cérémonie civile à la Mairie de Savenay à 15h30. Arrivée au domaine à 18h.',
       icon: <FaRegClock />,
-      visibleFor: ['Marie', 'temoin']
+      visibleFor: ['Marie', 'Témoin','All in','All out','Demi pension']
     },
     {
       title: 'Samedi 29 août',
       description: 'Cérémonie laïque au Domaine du Chalonges à 14h, vin d’honneur à 16h, dîner et soirée festive à partir de 19h30.',
       icon: <FaGlassCheers />,
-      visibleFor: ['Marie']
+      visibleFor: ['Marie', 'Témoin','All in','All out','Demi pension']
+    },
+        {
+      title: 'Samedi 29 août, 14h',
+      description: 'Cérémonie laïque au Domaine du Chalonges.',
+      icon: <FaRegClock />,
+      visibleFor: ['Cantine','Externe']
+    },
+        {
+      title: 'Samedi 29 août, 16h',
+      description: 'Vin d’honneur',
+      icon: <FaGlassCheers />,
+      visibleFor: ['Cantine','Externe']
+    },
+        {
+      title: 'Samedi 29 août, 19h30',
+      description: 'Dîner et soirée festive à partir de 19h30.',
+      icon: <FaUtensils />,
+      visibleFor: ['Cantine','Externe']
     },
     {
-      title: 'Dimanche 30 août',
+      title: 'Dimanche 30 août, 11h',
       description: 'Brunch convivial pour ceux qui souhaitent prolonger la fête.',
       icon: <FaUtensils />,
       visibleFor: []
@@ -72,6 +90,8 @@ useEffect(() => {
 
         {/* Texte accueil centre */}
         <div className="text-center md:text-left flex flex-col items-center justify-center">
+
+          Photo ronde 
           <p className="text-lg mb-8 text-gray-700 ">
             Nous avons hâte de partager cette journée unique avec vous, entre rires, émotions et souvenirs inoubliables.
           </p>
@@ -94,12 +114,12 @@ useEffect(() => {
             >
               Confirmer ma présence
             </button>
-            <a
-              href="/faq"
-              className="px-6 py-3 rounded-lg bg-[#b68542] text-white font-medium hover:bg-[#b68542]/80 transition"
+            <button
+              onClick={() => router.push('/faq')}
+              className="px-6 py-3 rounded-lg bg-powderblue text-white font-medium hover:bg-powderblue/80 transition"
             >
               En savoir plus
-            </a>
+            </button>
           </div>
         </div>
 

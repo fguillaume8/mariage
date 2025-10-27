@@ -143,7 +143,7 @@ const handleChange = (id: string, field: 'participation_Samedi' | 'participation
 
           {/* Samedi */}
           <label className="block mt-3 flex items-center justify-between">
-            <span className="font-medium text-powderblue">Présent(e) le samedi?</span>
+            <span className="font-medium text-powderblue">Serez-vous des nôtres le samedi ?</span>
             <select
               value={reponses[invite.id]?.participation_Samedi ? 'oui' : 'non'}
               onChange={(e) => handleChange(invite.id, 'participation_Samedi', e.target.value === 'oui')}
@@ -156,7 +156,7 @@ const handleChange = (id: string, field: 'participation_Samedi' | 'participation
 
           {/* Retour */}
           <label className="block mt-3 flex items-center justify-between">
-            <span className="font-medium text-powderblue">Présent(e) au retour?</span>
+            <span className="font-medium text-powderblue">Serez-vous présent(e) également pour le retour ?</span>
             <select
               value={reponses[invite.id]?.participation_Retour ? 'oui' : 'non'}
               onChange={(e) => handleChange(invite.id, 'participation_Retour', e.target.value === 'oui')}
@@ -171,9 +171,12 @@ const handleChange = (id: string, field: 'participation_Samedi' | 'participation
                     {['All_in', 'All_out', 'Demi pension','Marie','Témoin'].includes(invite.profil) && (
             <div className="mt-4">
               <h3 className="font-semibold mb-2 text-powderblue">Présence à la mairie</h3>
+              <span className="mr-2 font-medium text-powderblue">
+                  La cérémonie civile aura lieu le <b>28 août 2026 à 15h30 à Savenay</b>.
+                </span>
               <label className="block mt-3 flex items-center justify-between">
                 <span className="mr-2 font-medium text-powderblue">
-                  La mairie à lieu le 28/08/2026 à 15h30 à Savenay, je pense être présent ? 
+                  Pensez-vous pouvoir être présent(e) ?
                 </span>
                 <input
                   type="checkbox"
@@ -188,8 +191,10 @@ const handleChange = (id: string, field: 'participation_Samedi' | 'participation
           {['All in', 'Marie', 'Temoin', 'ami'].includes(invite.profil) && (
             <div className="mt-4">
               <h3 className="font-semibold mb-2 text-powderblue">Besoin de logement ?</h3>
+              <span className="mr-2 font-medium text-powderblue">Nous privilégions les invités restant <b>du vendredi au dimanche</b> (80 €),
+                                    mais s’il reste des disponibilités, un hébergement uniquement pour la nuit du samedi (50 €) pourra être proposé.</span>
               <label className="block mt-3 flex items-center justify-between">
-                <span className="mr-2 font-medium text-powderblue">Souhaitez-vous être hébergé du vendredi au dimanche ? (80 €)</span>
+                <span className="mr-2 font-medium text-powderblue">Je serais présent du vendredi au dimanche ? </span>
                 <select
                   value={reponses[invite.id]?.logement ? 'oui' : 'non'}
                   onChange={(e) => handleChange(invite.id, 'logement', e.target.value === 'oui')}
@@ -201,27 +206,26 @@ const handleChange = (id: string, field: 'participation_Samedi' | 'participation
               </label>
             </div>
           )}
-
-          {['demi_pension', 'cantine', 'Marie'].includes(invite.profil) && (
-            <div className="mt-4">
-              <h3 className="font-semibold mb-2 text-powderblue">Logement du samedi soir</h3>
-              <label className="block mt-3 flex items-center justify-between">
-                <span className="mr-2 font-medium text-powderblue">
-                  Je souhaite être averti s’il reste des logements pour le samedi soir (50 €)
-                </span>
-                <input
-                  type="checkbox"
-                  checked={!!reponses[invite.id]?.alerte_logement}
-                  onChange={(e) => handleChange(invite.id, 'alerte_logement', e.target.checked)}
-                  className="h-5 w-5 accent-[#b68542] border border-powderblue/40 rounded focus:ring-2 focus:ring-[#b68542]/50"
-                />
-              </label>
-            </div>
+          {(['demi_pension', 'cantine'].includes(invite.profil) || 
+            (['All in', 'Marie'].includes(invite.profil) && reponses[invite.id]?.logement === false)) && (
+              <div className="mt-4">
+                <label className="block mt-3 flex items-center justify-between">
+                  <span className="mr-2 font-medium text-powderblue">
+                    Je souhaite être averti s’il reste des logements pour le samedi soir 
+                  </span>
+                  <input
+                    type="checkbox"
+                    checked={!!reponses[invite.id]?.alerte_logement}
+                    onChange={(e) => handleChange(invite.id, 'alerte_logement', e.target.checked)}
+                    className="h-5 w-5 accent-[#b68542] border border-powderblue/40 rounded focus:ring-2 focus:ring-[#b68542]/50"
+                  />
+                </label>
+              </div>
           )}
 
           {/* Choix repas */}
           <label className="block mt-3">
-            <span className="font-medium text-powderblue">Choix du repas</span>
+            <h3 className="font-semibold mb-2 text-powderblue">Choix du repas</h3>
             <select
               value={reponses[invite.id]?.repas || ''}
               onChange={(e) => handleChange(invite.id, 'repas', e.target.value)}
@@ -235,7 +239,11 @@ const handleChange = (id: string, field: 'participation_Samedi' | 'participation
 
           {/* Message libre */}
           <label className="block mt-3">
-            <span className="font-medium text-powderblue">Une allergie ? Un petit message ? Dites le nous ! </span>
+            <h3 className="font-semibold mb-2 text-powderblue">Allergies ou petit mot pour nous ?</h3>
+            <span className="font-medium text-powderblue">
+              Une allergie, une préférence, ou simplement un petit mot pour nous ?<br />
+              Dites-le ici !
+            </span>
             <textarea
               value={reponses[invite.id]?.commentaire || ''}
               onChange={(e) => handleChange(invite.id, 'commentaire', e.target.value)}
