@@ -112,7 +112,7 @@ useEffect(() => {
   const question = questions[step]
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4" >
+    <div className="flex flex-col items-center justify-center bg-[#f7f4eb] min-h-screen p-4" >
       {selectingPerson && (
         <div className="flex flex-col items-center justify-center min-h-screen p-4 ">
           <div className="bg-white w-full max-w-5xl p-8 rounded-2xl shadow-lg text-center border border-gray-300">

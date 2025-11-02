@@ -1,9 +1,10 @@
 'use client'
 
 
-import { useState } from 'react'
-import { useInvite } from '@/app/context/InviteContext'
 
+import { useInvite } from '@/app/context/InviteContext'
+import { useEffect, useState } from 'react'
+import { supabase } from '@/app/lib/supabaseClient'
 
 interface FaqItem {
   question: string
@@ -19,9 +20,32 @@ export default function FaqClient() {
   const { ids } = useInvite()
   const [openIndex, setOpenIndex] = useState<string | null>(null)
 
-  // Ici on prend juste le premier invité pour l'exemple
-  // Tu peux adapter si tu veux gérer plusieurs invités
-  const invite = ids && ids.length > 0 ? { profil: 'logement_Oui' } : { profil: '' }
+ const [invite, setInvite] = useState<{id?: number, profil: string}>({ profil: '' })
+
+  // Récupération du profil depuis Supabase
+useEffect(() => {
+  const fetchInvite = async () => {
+    if (!ids || ids.length === 0) return
+
+    const { data, error } = await supabase
+      .from('invites')
+      .select('profil')
+      .eq('id', Number(ids[0]))
+      .single()
+
+    if (error) {
+      console.error('Erreur Supabase:', error)
+      return
+    }
+
+    console.log('Données récupérées:', data) // <-- Ici tu vois le profil
+    setInvite({ id: Number(ids[0]), profil: data.profil })
+  }
+
+  fetchInvite()
+}, [ids])
+  console.log('useInvite:', { ids })
+
 
   const faqData: FaqSection[] = [
     {
@@ -33,6 +57,7 @@ export default function FaqClient() {
         { question: "Y a-t-il un parking sur place ?", answer: "Oui, un parking gratuit est disponible pour les invités.",visibleForProfile: []  },
         { question: "Y a-t-il des hébergements à proximité ?", answer: "Nous avons listé des hôtels proches dans la section 'Hébergement' de notre site.",visibleForProfile: ['aa','Nous']  },
         { question: "Y a-t-il des hébergements à proximité ?", answer: "Vous pouvez demander un logement sur le site dans le RSVP",visibleForProfile: ['bb','Nous']  },
+
       ]
     },
     {
@@ -82,42 +107,44 @@ export default function FaqClient() {
   ]
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-4xl font-bold mb-10 text-center">FAQ - Questions fréquentes</h1>
-      {faqData.map((section, idx) => (
-        <div key={idx} className="mb-8">
-          <h2 className="text-2xl font-semibold mb-5 border-b pb-2">{section.category}</h2>
-          <div className="space-y-3">
-            {section.items
-              .filter(
-                item =>
-                  !item.visibleForProfile ||
-                  item.visibleForProfile.length === 0 ||
-                  item.visibleForProfile.includes(invite.profil)
-              )
-              .map((item, index) => {
-                const isOpen = openIndex === `${idx}-${index}`
-                return (
-                  <div key={index} className="border rounded-lg overflow-hidden shadow-sm">
-                    <button
-                      className="w-full flex justify-between items-center p-4 font-medium text-left bg-white hover:bg-gray-100 transition-colors"
-                      onClick={() => setOpenIndex(isOpen ? null : `${idx}-${index}`)}
-                    >
-                      {item.question}
-                      <span className="ml-2 font-bold">{isOpen ? '−' : '+'}</span>
-                    </button>
-                    <div
-                      className="transition-all duration-300 overflow-hidden bg-gray-50 px-4"
-                      style={{ maxHeight: isOpen ? '500px' : '0' }}
-                    >
-                      <p className="py-3">{item.answer}</p>
-                    </div>
-                  </div>
+    <div className="bg-[#f7f4eb]">
+      <div className="max-w-4xl mx-auto p-6 bg-[#f7f4eb]">
+        <h1 className="text-4xl font-bold mb-10  text-powderblue text-center">FAQ - Questions fréquentes</h1>
+        {faqData.map((section, idx) => (
+          <div key={idx} className="mb-8">
+            <h2 className="text-2xl font-semibold mb-5  text-powderblue border-b pb-2">{section.category}</h2>
+            <div className="space-y-3">
+              {section.items
+                .filter(
+                  item =>
+                    !item.visibleForProfile ||
+                    item.visibleForProfile.length === 0 ||
+                    item.visibleForProfile.includes(invite.profil)
                 )
-              })}
+                .map((item, index) => {
+                  const isOpen = openIndex === `${idx}-${index}`
+                  return (
+                    <div key={index} className="border rounded-lg overflow-hidden shadow-sm">
+                      <button
+                        className="w-full flex justify-between items-center p-4 font-medium text-left bg-white hover:bg-gray-100 transition-colors"
+                        onClick={() => setOpenIndex(isOpen ? null : `${idx}-${index}`)}
+                      >
+                        {item.question}
+                        <span className="ml-2 font-bold">{isOpen ? '−' : '+'}</span>
+                      </button>
+                      <div
+                        className="transition-all duration-300 overflow-hidden bg-gray-50 px-4"
+                        style={{ maxHeight: isOpen ? '500px' : '0' }}
+                      >
+                        <p className="py-3">{item.answer}</p>
+                      </div>
+                    </div>
+                  )
+                })}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   )
 }
