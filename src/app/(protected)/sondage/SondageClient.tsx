@@ -120,7 +120,7 @@ useEffect(() => {
             {inviteNames.map((inv) => (
               <button
                 key={inv.id}
-                className="block w-full py-2 px-4 mb-2 bg-powderblue text-white rounded hover:bg-pink-600"
+                className="block w-full py-2 px-4 mb-2 bg-powderblue text-white rounded hover:bg-ocre"
                 onClick={() => {
                   setCurrentUserId(inv.id)
                   setSelectingPerson(false)

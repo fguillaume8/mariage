@@ -29,26 +29,27 @@ export default function FaqClient() {
       items: [
         { question: "Où et quand a lieu la cérémonie ?", answer: "La cérémonie laïque aura lieu le 29 aout 2026 au domaine du Chalonges à Héric.",visibleForProfile: [] },
         { question: "À quelle heure devons-nous arriver ?", answer: "Nous vous attendons à 14h30 au domaine",visibleForProfile: []  },
-        { question: "Y a-t-il un dress code ?", answer: "Nous vous suggérons une tenue chic et confortable. Il n'y a dress code imposé.",visibleForProfile: []  },
+        { question: "Y a-t-il un dress code ?", answer: "Nous vous suggérons une tenue chic et confortable. Il n'y a pas de dress code imposé.",visibleForProfile: []  },
         { question: "Y a-t-il un parking sur place ?", answer: "Oui, un parking gratuit est disponible pour les invités.",visibleForProfile: []  },
-        { question: "Y a-t-il des hébergements à proximité ?", answer: "Nous avons listé des hôtels proches dans la section 'Hébergement' de notre site.",visibleForProfile: ['aa']  },
+        { question: "Y a-t-il des hébergements à proximité ?", answer: "Nous avons listé des hôtels proches dans la section 'Hébergement' de notre site.",visibleForProfile: ['aa','Nous']  },
+        { question: "Y a-t-il des hébergements à proximité ?", answer: "Vous pouvez demander un logement sur le site dans le RSVP",visibleForProfile: ['bb','Nous']  },
       ]
     },
     {
       category: "Organisation de la journée",
       items: [
-        { question: "Quelle est la différence entre la cérémonie civile/religieuse et la fête ?", answer: "La cérémonie est le moment officiel, suivi de la réception et de la fête pour célébrer ensemble.",visibleForProfile: []  },
+        { question: "Quelle est la différence entre la cérémonie civile et la fête ?", answer: "La cérémonie civil est le moment officiel,qui se déroule de vendredi à la mairie de Savenay. La fête et la cérémonie laïque se déroule samedi.",visibleForProfile: []  },
         { question: "Y aura-t-il un plan de table ?", answer: "Oui, un plan de table sera disponible à l'entrée de la réception.",visibleForProfile: []  },
-        { question: "Puis-je amener mes enfants ?", answer: "Oui, ils sont les bienvenus. Une animation spéciale sera prévue pour eux.",visibleForProfile: []  },
+        { question: "Puis-je amener mes enfants ?", answer: "Non, les enfants ne sont pas conviés au mariage.",visibleForProfile: []  },
         { question: "Les animaux de compagnie sont-ils acceptés ?", answer: "Malheureusement, les animaux ne sont pas autorisés sur le lieu de la cérémonie et de la réception.",visibleForProfile: []  },
-        { question: "Y a-t-il des activités prévues le lendemain ?", answer: "Oui, un brunch sera organisé pour ceux qui souhaitent prolonger la fête.",visibleForProfile: []  },
+        { question: "Y a-t-il des activités prévues le lendemain ?", answer: "Oui, un retour sera organisé pour ceux qui souhaitent prolonger la fête.",visibleForProfile: []  },
       ]
     },
     {
       category: "Repas & boissons",
       items: [
         { question: "Que faire si j’ai des allergies ou un régime alimentaire particulier ?", answer: "Merci de nous le signaler via le formulaire RSVP afin que nous puissions nous organiser.",visibleForProfile: []  },
-        { question: "Y aura-t-il un menu végétarien / vegan / sans gluten ?", answer: "Oui, nous proposons plusieurs options adaptées à différents régimes.",visibleForProfile: []  },
+        { question: "Y aura-t-il un menu végétarien ?", answer: "Oui, nous proposons une option végé",visibleForProfile: []  },
         { question: "Puis-je choisir mon plat à l’avance ?", answer: "Oui, vous pourrez indiquer votre choix lors de votre confirmation de présence.",visibleForProfile: []  },
       ]
     },
@@ -56,16 +57,15 @@ export default function FaqClient() {
       category: "Cadeaux",
       items: [
         { question: "Avez-vous une liste de mariage ou une cagnotte ?", answer: "Oui, toutes les informations sont disponibles sur notre page 'Cadeaux'.",visibleForProfile: []  },
-        { question: "Peut-on offrir quelque chose en dehors de la liste ?", answer: "Bien sûr, tout cadeau est apprécié, mais la liste/cagnotte est là pour vous guider.",visibleForProfile: []  },
-        { question: "Préférez-vous un cadeau ou une participation au voyage de noces ?", answer: "Nous laissons le choix à chacun selon ses envies.",visibleForProfile: []  },
+        { question: "Peut-on offrir quelque chose en dehors de la liste ?", answer: "Bien sûr, tout cadeau est apprécié, mais la cagnotte est là pour vous guider. a retravailler",visibleForProfile: []  },
+        { question: "Préférez-vous un cadeau ou une participation au voyage de noces ?", answer: "Nous avons de beaux (et gros) projet ;) .",visibleForProfile: []  },
       ]
     },
     {
       category: "RSVP / Réponses",
       items: [
         { question: "Comment confirmer ma présence ?", answer: "Vous pouvez confirmer votre présence via le formulaire RSVP sur notre site.",visibleForProfile: []  },
-        { question: "Jusqu’à quelle date puis-je répondre ?", answer: "Merci de répondre avant le [date limite].",visibleForProfile: []  },
-        { question: "Puis-je venir accompagné(e) ?", answer: "Oui, vous pouvez indiquer le nombre de personnes dans le formulaire RSVP.",visibleForProfile: []  },
+        { question: "Jusqu’à quelle date puis-je répondre ?", answer: "Merci de répondre avant le 01/05/2026.",visibleForProfile: []  },
         { question: "Comment signaler que je ne pourrai finalement pas venir ?", answer: "Vous pouvez mettre à jour votre réponse via le formulaire RSVP ou nous contacter directement.",visibleForProfile: []  },
       ]
     },
@@ -73,7 +73,7 @@ export default function FaqClient() {
       category: "Divers",
       items: [
         { question: "Y aura-t-il un photographe / photobooth ?", answer: "Oui, nous aurons un photographe officiel et un photobooth pour tous les invités.",visibleForProfile: []  },
-        { question: "Pouvons-nous prendre des photos pendant la cérémonie ?", answer: "Nous préférons que vous laissiez le photographe faire son travail, mais quelques photos discrètes sont acceptées.",visibleForProfile: []  },
+        { question: "Pouvons-nous prendre des photos pendant la cérémonie ?", answer: "Nous préférons que vous laissiez le photographe faire son travail.",visibleForProfile: []  },
         { question: "Où partager nos photos après le mariage ?", answer: "Nous créerons un album en ligne où vous pourrez déposer vos photos.",visibleForProfile: []  },
         { question: "Que se passe-t-il en cas de pluie ?", answer: "La cérémonie et la réception sont prévues à l'intérieur si nécessaire.",visibleForProfile: []  },
         { question: "Qui contacter en cas de question de dernière minute ?", answer: "Vous pouvez nous contacter directement via le formulaire de contact ou par téléphone.",visibleForProfile: []  },
