@@ -52,7 +52,7 @@ useEffect(() => {
       category: "Informations pratiques",
       items: [
         { question: "Où et quand a lieu la cérémonie civile ?", answer: "La cérémonie civile se déroule à la mairie de Savenay le vendredi 28 à 15h30",visibleForProfile: [] },
-        { question: "Où et quand a lieu la cérémonie laïque  ?", answer: "La cérémonie laïque aura lieu le 29 aout 2026 au domaine du l'écodomaine du Chalonges à Héric.",visibleForProfile: [] },
+        { question: "Où et quand a lieu la cérémonie laïque  ?", answer: `La cérémonie laïque aura lieu le 29 aout 2026 au domaine du l'écodomaine du Chalonges à Héric.<div style="display: flex; justify-content: center; margin-top: 1rem;"> <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3255.223874044167!2d-1.9468952232719519!3d47.35895010504562!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x480581794c7d45ff%3A0xf1f6affe51dfffca!2sMairie!5e1!3m2!1sfr!2sfr!4v1762186684065!5m2!1sfr!2sfr" center width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>`,visibleForProfile: [] },
         { question: "Qu’est-ce qu’une cérémonie laïque ?", answer: " La cérémonie laïque est une célébration symbolique, libre et personnalisée sans connotations religieuses ou administratives.",visibleForProfile: []  },
         { question: "À quelle heure devons-nous arriver ?", answer: "Nous vous attendons à 14h30 au domaine",visibleForProfile: []  },
         { question: "Y a-t-il un parking sur place ?", answer: "Oui, un parking gratuit est disponible pour les invités.",visibleForProfile: []  },
@@ -137,7 +137,10 @@ useEffect(() => {
                         className="transition-all duration-300 overflow-hidden bg-gray-50 px-4"
                         style={{ maxHeight: isOpen ? '500px' : '0' }}
                       >
-                        <p className="py-3">{item.answer}</p>
+                        <div
+  className="py-3 prose max-w-none justify"
+  dangerouslySetInnerHTML={{ __html: item.answer }}
+/>
                       </div>
                     </div>
                   )
