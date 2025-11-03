@@ -127,7 +127,7 @@ const handleChange = (id: string, field: 'participation_Samedi' | 'participation
   return (
 <div className="flex flex-1 min-h-[calc(100vh-57px)] w-full bg-[#f7f4eb]">
   {/* Colonne gauche : RSVP */}
-  <div className="w-3/8 h-screen-64px  flex justify-center items-center p-5">
+  <div className="w-1/2 h-screen-64px  flex justify-center items-center p-5">
     <div className="w-full max-w-3xl max-h-[90vh] overflow-y-auto
                     p-8 rounded-2xl shadow-2xl 
                     bg-gradient-to-br from-[#f7f4eb]/30 via-[#b68542]/20 to-powderblue/20
@@ -178,12 +178,14 @@ const handleChange = (id: string, field: 'participation_Samedi' | 'participation
                 <span className="mr-2 font-medium text-powderblue">
                   Pensez-vous pouvoir être présent(e) ?
                 </span>
-                <input
-                  type="checkbox"
-                  checked={!!reponses[invite.id]?.mairie}
-                  onChange={(e) => handleChange(invite.id, 'mairie', e.target.checked)}
-                  className="h-5 w-5 accent-[#b68542] border border-powderblue/40 rounded focus:ring-2 focus:ring-[#b68542]/50"
-                />
+              <select
+                  value={reponses[invite.id]?.mairie ? 'oui' : 'non'}
+                  onChange={(e) => handleChange(invite.id, 'mairie', e.target.value === 'oui')}
+                  className="border border-powderblue/40 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-[#b68542]/50 bg-white/60 w-24"
+                >
+                  <option value="non">Non</option>
+                  <option value="oui">Oui</option>
+                </select>
               </label>
             </div>
           )}
@@ -194,7 +196,7 @@ const handleChange = (id: string, field: 'participation_Samedi' | 'participation
               <span className="mr-2 font-medium text-powderblue">Nous privilégions les invités restant <b>du vendredi au dimanche</b> (80 €),
                                     mais s’il reste des disponibilités, un hébergement uniquement pour la nuit du samedi (50 €) pourra être proposé.</span>
               <label className="block mt-3 flex items-center justify-between">
-                <span className="mr-2 font-medium text-powderblue">Je serais présent du vendredi au dimanche ? </span>
+                <span className="mr-2 font-medium text-powderblue">Souhaitez-vous un logement du vendredi au dimanche ? </span>
                 <select
                   value={reponses[invite.id]?.logement ? 'oui' : 'non'}
                   onChange={(e) => handleChange(invite.id, 'logement', e.target.value === 'oui')}
@@ -232,7 +234,7 @@ const handleChange = (id: string, field: 'participation_Samedi' | 'participation
               className="mt-1 p-2 border border-powderblue/40 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-[#b68542]/50 bg-white/60 "
             >
               <option value="">-- Choisir un repas --</option>
-              <option value="viande">Viande</option>
+              <option value="viande">Viande (canard)</option>
               <option value="vegetarien">Végétarien</option>
             </select>
           </label>

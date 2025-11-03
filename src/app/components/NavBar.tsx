@@ -42,9 +42,9 @@ export default function NavBar() {
 
   // Liens de base
   const links = [
+    { href: '/infos', label: 'Infos' },
     { href: '/rsvp', label: 'RSVP' },
     { href: '/faq', label: 'FAQ' },
-    { href: '/infos', label: 'Infos' },
     { href: '/cagnotte', label: 'Cagnotte' },
     { href: '/sondage', label: 'Sondage' },
     { href: '/contact', label: 'Nous contacter' },
