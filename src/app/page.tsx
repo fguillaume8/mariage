@@ -24,17 +24,6 @@ export default function Home() {
     setMounted(true)
   }, [])
 
-function normalize(str: string) {
-  return str
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // supprime accents
-    .replace(/\s+/g, '')             // supprime espaces
-    .replace(/-/g, '')               // supprime tirets
-    .replace(/’/g, "'")              // apostrophes typographiques
-}
-
-
 
 
   if (!mounted) return null // ou un loader neutre
