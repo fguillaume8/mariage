@@ -53,12 +53,20 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   console.log('Nom saisi normalisé :', nomNormalized)
   console.log('Prénom saisi normalisé :', prenomNormalized)
 
+
+
   // --- Récupération large côté DB ---
-const { data: inviteData, error: inviteError } = await supabase
+
+  const { data: inviteData, error: inviteError } = await supabase
+  .rpc('search_invites_normalized', {
+    nom_search: nomNormalized.trim(),
+    prenom_search: prenomNormalized.trim()
+  });
+/*const { data: inviteData, error: inviteError } = await supabase
   .from('invites')
   .select()
   .ilike('nom', `%${nomNormalized.trim()}%`)
-  .filter('prenom', 'ilike', `%${prenomNormalized.trim()}%`)
+  .filter('prenom', 'ilike', `%${prenomNormalized.trim()}%`)*/
 
   console.log('Données brutes récupérées :', inviteData)
 
