@@ -7,6 +7,8 @@ import 'react-vertical-timeline-component/style.min.css'
 import { FaGlassCheers, FaRegClock, FaUtensils } from 'react-icons/fa'
 import { useEffect, useState } from 'react'
 import { supabase } from '@/app/lib/supabaseClient'
+import Image from "next/image";
+
 
 export default function InfoClient() {
   const router = useRouter()
@@ -91,21 +93,32 @@ useEffect(() => {
         {/* Texte accueil centre */}
         <div className="text-center md:text-left flex flex-col items-center justify-center">
 
-          Photo ronde 
-          <p className="text-lg mb-8 text-gray-700 ">
-            Nous avons hâte de partager cette journée unique avec vous, entre rires, émotions et souvenirs inoubliables.
-          </p>
+          <div className="flex justify-center md:justify-end">
+        <Image
+          src="/image/couverture.jpg"     // ton image dans le dossier public/
+          alt="Photo des mariés"
+          width={600}               // adapte selon le rendu voulu
+          height={600}
+          className="rounded-full object-cover shadow-lg border-4 border-[#b68542]"
+        />
+  </div>
 
-          <h2 className="text-2xl font-semibold text-[#b68542] mb-2">
+          <h2 className="text-2xl font-semibold text-[#b68542] mb-2 mt-8">
             Samedi 29 août 2026
           </h2>
-          <p className="text-gray-700 mb-6">Domaine du Chalonges, Héric</p>
+          <p className="text-gray-700 mb-6">Ecodomaine du Chalonges, Héric</p>
 
-          {['famille', 'temoin'].includes(invite.profil) && (
+          {['tesr', 'temoin'].includes(invite.profil) && (
             <p className="text-md text-gray-600 mb-6">
-              Cérémonie civile : Vendredi 28 août à 15h — Mairie de Nantes
+              Cérémonie civile : Vendredi 28 août à 15h — Mairie de Savenay
             </p>
           )}
+
+          <p className="text-lg mb-8 mt-4 text-gray-700 text-center">
+            Nous avons hâte de partager cette journée unique avec vous,<br />
+            entre rires, émotions et souvenirs inoubliables.
+          </p>
+
 
           <div className="flex flex-wrap gap-4 justify-center md:justify-start">
             <button
@@ -132,6 +145,7 @@ useEffect(() => {
                 <VerticalTimelineElement
                   key={idx}
                   date={item.title}
+                  dateClassName="text-sm text-[#b68542] ml-6 mr-6 " /* pour décaller les dates */
                   iconStyle={{ background: '#b68542', color: '#fff' }}
                   icon={item.icon}
                   contentStyle={{ background: 'rgba(247, 244, 235, 0.6)', color: '#333', borderRadius: '16px', padding: '32px' }}
