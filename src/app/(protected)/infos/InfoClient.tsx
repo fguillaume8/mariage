@@ -134,7 +134,7 @@ useEffect(() => {
                   date={item.title}
                   iconStyle={{ background: '#b68542', color: '#fff' }}
                   icon={item.icon}
-                  contentStyle={{ background: 'rgba(247, 244, 235, 0.6)', color: '#333', borderRadius: '16px', padding: '16px' }}
+                  contentStyle={{ background: 'rgba(247, 244, 235, 0.6)', color: '#333', borderRadius: '16px', padding: '32px' }}
                   contentArrowStyle={{ borderRight: '7px solid #b68542' }}
                 >
                   <p>{item.description}</p>

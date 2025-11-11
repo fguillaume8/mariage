@@ -165,7 +165,9 @@ export default function Home() {
           <img
             src="image/Logo_200.png"
             alt="Logo mariage"
-            className="h-150 w-auto object-contain"
+            className="h-150 w-auto object-contain opacity-90"
+            
+            
           />
         </div>
       </div>
