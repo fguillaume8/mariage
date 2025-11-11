@@ -24,50 +24,107 @@ export default function Home() {
     setMounted(true)
   }, [])
 
+function normalize(str: string) {
+  return str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // supprime accents
+    .replace(/\s+/g, '')             // supprime espaces
+    .replace(/-/g, '')               // supprime tirets
+    .replace(/’/g, "'")              // apostrophes typographiques
+}
+
+
+
+
   if (!mounted) return null // ou un loader neutre
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault()
-    setErreur('')
+  
 
-    // Cherche l’invité
-    const { data: inviteData, error: inviteError } = await supabase
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault()
+  setErreur('')
+
+  console.log("handleSubmit appelé") // debug
+
+  // --- Normalisation robuste ---
+  function normalize(str: string) {
+    return str
+      .toLowerCase()
+      .normalize('NFD')                 // décompose accents
+      .replace(/[\u0300-\u036f]/g, '') // supprime accents
+      .replace(/-/g, ' ')               // supprime tirets
+      .replace(/’/g, "'")              // apostrophes typographiques
+  }
+
+  const nomNormalized = normalize(nom)
+  const prenomNormalized = normalize(prenom)
+
+  // Logs inputs normalisés
+  console.log('Nom saisi normalisé :', nomNormalized)
+  console.log('Prénom saisi normalisé :', prenomNormalized)
+
+  // --- Récupération large côté DB ---
+const { data: inviteData, error: inviteError } = await supabase
+  .from('invites')
+  .select()
+  .ilike('nom', `%${nomNormalized.trim()}%`)
+  .filter('prenom', 'ilike', `%${prenomNormalized.trim()}%`)
+
+  console.log('Données brutes récupérées :', inviteData)
+
+  if (inviteError || !inviteData || inviteData.length === 0) {
+    setErreur("Aucun invité trouvé avec ce nom/prénom.")
+    return
+  }
+
+  // --- Filtrage côté JS ---
+  const filtered = inviteData.filter(invite => {
+    const nomInv = normalize(invite.nom)
+    const prenomInv = normalize(invite.prenom)
+    console.log('Invite.nom normalisé :', nomInv, '| Invite.prenom normalisé :', prenomInv)
+    
+    // Ici on peut utiliser includes pour être plus tolérant
+    return nomInv.includes(nomNormalized) && prenomInv.includes(prenomNormalized)
+  })
+
+  console.log('Invités filtrés :', filtered)
+
+  if (filtered.length === 0) {
+    setErreur("Aucun invité trouvé avec ce nom/prénom.")
+    return
+  }
+
+  const invite = filtered[0]
+
+  // --- Gestion du groupe ---
+  if (invite.groupe_id) {
+    const { data: groupData, error: groupError } = await supabase
       .from('invites')
       .select()
-      .ilike('nom', nom.trim())
-      .ilike('prenom', prenom.trim())
+      .eq('groupe_id', invite.groupe_id)
 
-    if (inviteError || !inviteData || inviteData.length === 0) {
-      setErreur("Aucun invité trouvé avec ce nom/prénom.")
+    if (groupError || !groupData || groupData.length === 0) {
+      setErreur("Erreur lors de la récupération du groupe.")
       return
     }
 
-    const invite = inviteData[0]
-    if (invite.groupe_id) {
-      // Récupère tous les membres du groupe
-      const { data: groupData, error: groupError } = await supabase
-        .from('invites')
-        .select()
-        .eq('groupe_id', invite.groupe_id)
-
-      if (groupError || !groupData || groupData.length === 0) {
-        setErreur("Erreur lors de la récupération du groupe.")
-        return
-      }
-
-      if (groupData.length === 1) {
-        // Un seul membre dans le groupe, redirige direct
-        const ids = [groupData[0].id]
-        setIds(ids)
-        router.push(`/infos?ids=${groupData[0].id}`)
-      } else {
-        // Plusieurs membres, ouvre la modale
-        setGroupMembers(groupData)
-        setSelectedIds(groupData.map((m) => m.id)) // Par défaut, tout coché
-        setShowModal(true)
-      }
-    } 
+    if (groupData.length === 1) {
+      const ids = [groupData[0].id]
+      setIds(ids)
+      router.push(`/infos?ids=${groupData[0].id}`)
+    } else {
+      setGroupMembers(groupData)
+      setSelectedIds(groupData.map(m => m.id)) // tout coché par défaut
+      setShowModal(true)
+    }
+  } else {
+    // Pas de groupe, accès direct
+    setIds([invite.id])
+    router.push(`/infos?ids=${invite.id}`)
   }
+}
+
 
   const toggleSelection = (id: string) => {
     setSelectedIds((prev) =>

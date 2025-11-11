@@ -26,8 +26,8 @@ export default function NavBar() {
         .in('id', ids)
 
       if (!error && data) {
-        setIsTemoin(data.some((inv) => inv.profil === 'temoin'))
-        setIsMarie(data.some((inv) => inv.profil === 'Nous'))
+        setIsTemoin(data.some((inv) => inv.profil === 'Témoin'))
+        setIsMarie(data.some((inv) => inv.profil === 'Marie'))
       }
     }
 
@@ -50,8 +50,8 @@ export default function NavBar() {
     { href: '/contact', label: 'Nous contacter' },
   ]
 
-  if (isTemoin) links.push({ href: '/temoin', label: 'Témoins' })
-  if (isMarie) links.push({ href: '/marie', label: 'Mariés' })
+  if (isTemoin) links.push({ href: '/temoin', label: 'Témoin' })
+  if (isMarie) links.push({ href: '/marie', label: 'Marie' })
 
   return (
       <nav className="bg-yellowfade border-t-6 border-b-6 border-ocre rounded-md shadow-md">

@@ -115,7 +115,13 @@ useEffect(() => {
     <div className="flex flex-col items-center justify-center bg-[#f7f4eb] min-h-screen p-4" >
       {selectingPerson && (
         <div className="flex flex-col items-center justify-center min-h-screen p-4 ">
-          <div className="bg-white w-full max-w-5xl p-8 rounded-2xl shadow-lg text-center border border-gray-300">
+          <div className="text-center text-gray-700 text-lg space-y-2">
+            <p>Les mariés n&apos;ont pas accès à ces questions avant le mariage </p>
+            <p>Répondez en votre âme et conscience</p>
+            <p className="mt-8">Seront-ils d&apos;accord avec vous le jour J ?</p>
+            <p></p>
+          </div>
+          <div className="bg-white w-full max-w-5xl p-8 rounded-2xl mt-10 shadow-lg text-center border border-gray-300">
             <h2 className="text-lg font-semibold mb-4">Qui répond au quiz ?</h2>
             {inviteNames.map((inv) => (
               <button

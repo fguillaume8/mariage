@@ -45,8 +45,8 @@ export default function ContactPage() {
       />
 
       <div className="absolute right-0 top-0 h-full w-[40%] bg-yellowfade/60 p-10 z-10 flex flex-col justify-center shadow-2xl">
-        <h1 className="text-3xl text-powderblue font-bold mb-4">Nous contacter</h1>
-        <p className="mb-6 text-ocre">
+        <h1 className="text-3xl text-powderbluedark font-bold mb-4">Nous contacter</h1>
+        <p className="mb-6 text-ocredark">
           Une question, une demande spéciale ? Écrivez-nous !
         </p>
 
@@ -76,7 +76,7 @@ export default function ContactPage() {
             <textarea
               name="message"
               placeholder="Votre message"
-              className="border p-2 rounded font-serif text-gray-800 placeholder-gray-400 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="border p-2 rounded font-serif text-gray-800 h-60 placeholder-gray-400 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
             />
             <button

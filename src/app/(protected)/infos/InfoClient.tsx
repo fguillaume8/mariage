@@ -49,25 +49,25 @@ useEffect(() => {
     },
     {
       title: 'Samedi 29 août',
-      description: 'Cérémonie laïque au Domaine du Chalonges à 14h, vin d’honneur à 16h, dîner et soirée festive à partir de 19h30.',
+      description: 'Cérémonie laïque au Domaine du Chalonges à 14h30, vin d’honneur à 17h, dîner et soirée festive à partir de 19h.',
       icon: <FaGlassCheers />,
       visibleFor: ['Marie', 'Témoin','All in','All out','Demi pension']
     },
         {
-      title: 'Samedi 29 août, 14h',
+      title: 'Samedi 29 août, 14h30',
       description: 'Cérémonie laïque au Domaine du Chalonges.',
       icon: <FaRegClock />,
       visibleFor: ['Cantine','Externe']
     },
         {
-      title: 'Samedi 29 août, 16h',
+      title: 'Samedi 29 août, 17h',
       description: 'Vin d’honneur',
       icon: <FaGlassCheers />,
       visibleFor: ['Cantine','Externe']
     },
         {
       title: 'Samedi 29 août, 19h30',
-      description: 'Dîner et soirée festive à partir de 19h30.',
+      description: 'Dîner et soirée festive à partir de 19h.',
       icon: <FaUtensils />,
       visibleFor: ['Cantine','Externe']
     },
