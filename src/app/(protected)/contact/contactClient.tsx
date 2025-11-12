@@ -34,24 +34,31 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="relative w-full h-screen">
-      <Image
-        src="/image/cri.jpg"
-        alt="Image de fond"
-        fill
-        priority
-        className="object-cover z-0"
-        style={{ position: 'absolute' }}
-      />
+     <div className="w-full min-h-screen flex flex-col md:flex-row">
+      {/* Image visible uniquement sur desktop */}
+      <div className="hidden md:block md:w-3/5 relative">
+        <Image
+          src="/image/cri.jpg"
+          alt="Image de fond"
+          fill
+          priority
+          className="object-cover"
+        />
+      </div>
 
-      <div className="absolute right-0 top-0 h-full w-[40%] bg-yellowfade/60 p-10 z-10 flex flex-col justify-center shadow-2xl">
-        <h1 className="text-3xl text-powderbluedark font-bold mb-4">Nous contacter</h1>
-        <p className="mb-6 text-ocredark">
+      {/* Formulaire */}
+      <div className="w-full md:w-2/5 bg-yellowfade/60 p-6 md:p-10 flex flex-col justify-center shadow-2xl">
+        <h1 className="text-2xl md:text-3xl text-powderbluedark font-bold mb-4 text-center md:text-left">
+          Nous contacter
+        </h1>
+        <p className="mb-6 text-ocredark text-center md:text-left">
           Une question, une demande spéciale ? Écrivez-nous !
         </p>
 
         {sent ? (
-          <div className="text-green-600 font-semibold">Message envoyé ! Merci 💌</div>
+          <div className="text-green-600 font-semibold text-center md:text-left">
+            Message envoyé ! Merci 💌
+          </div>
         ) : (
           <form
             action="https://formspree.io/f/xvgwgyzn"
@@ -76,7 +83,7 @@ export default function ContactPage() {
             <textarea
               name="message"
               placeholder="Votre message"
-              className="border p-2 rounded font-serif text-gray-800 h-60 placeholder-gray-400 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="border p-2 rounded font-serif text-gray-800 h-48 md:h-60 placeholder-gray-400 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
             />
             <button
@@ -85,7 +92,11 @@ export default function ContactPage() {
             >
               Envoyer
             </button>
-            {error && <p className="text-red-600">Une erreur est survenue. Réessayez.</p>}
+            {error && (
+              <p className="text-red-600 text-center md:text-left">
+                Une erreur est survenue. Réessayez.
+              </p>
+            )}
           </form>
         )}
       </div>
