@@ -21,7 +21,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Mariage 💍",
+  title: "Mariage A&G 💍",
   description: "Site de mariage personnalisé",
 };
 

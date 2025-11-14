@@ -148,7 +148,7 @@ useEffect(() => {
                   dateClassName="text-sm text-[#b68542] ml-6 mr-6 " /* pour décaller les dates */
                   iconStyle={{ background: '#b68542', color: '#fff' }}
                   icon={item.icon}
-                  contentStyle={{ background: 'rgba(247, 244, 235, 0.6)', color: '#333', borderRadius: '16px', padding: '32px' }}
+                  contentStyle={{ background: 'rgba(247, 244, 235, 0.6)', color: '#333', borderRadius: '16px',  alignItems: 'center',paddingTop: '0px'}}
                   contentArrowStyle={{ borderRight: '7px solid #b68542' }}
                 >
                   <p>{item.description}</p>

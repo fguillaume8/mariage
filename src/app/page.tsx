@@ -47,8 +47,8 @@ export default function Home() {
     // --- Recherche avec RPC (correspondance exacte) ---
     const { data: inviteData, error: inviteError } = await supabase
       .rpc('search_invites_normalized', {
-        nom_search: nomNormalized,
-        prenom_search: prenomNormalized
+        nom_search: nom,
+        prenom_search: prenom
       })
 
     console.log('Résultats trouvés:', inviteData)

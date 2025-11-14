@@ -71,7 +71,7 @@ useEffect(() => {
         { question: "Y aura-t-il un plan de table ?", answer: "Oui, un plan de table sera disponible à l'entrée de la réception.",visibleForProfile: []  },
         { question: "Puis-je amener mes enfants, mon +1 ?", answer: "Non, les faire-part sont nominatifs.",visibleForProfile: []  },
         { question: "Les animaux de compagnie sont-ils acceptés ?", answer: "Malheureusement, les animaux ne sont pas autorisés sur le domaine.",visibleForProfile: []  },
-        { question: "Y a-t-il des activités prévues le lendemain ?", answer: "Oui, un retour de noce est prévu entre 11h et 15h.",visibleForProfile: []  },
+        { question: "Y a-t-il des activités prévues le lendemain ?", answer: "Oui, un retour de noces est prévu entre 11h et 15h.",visibleForProfile: []  },
       ]
     },
     {
@@ -86,7 +86,7 @@ useEffect(() => {
       items: [
 
         { question: "Avez-vous une liste de mariage ou une cagnotte ?", answer: "Oui, toutes les informations sont disponibles sur notre page 'Cagnotte'.",visibleForProfile: []  },
-        { question: "Peut-on offrir quelque chose en dehors de la liste ?", answer: " Bien sûr ! Si vous préférez offrir un autre cadeau, cela nous touchera beaucoup. Cependant, nous avons déjà tout ce qu'il nous faut pour la maison (si ce n'est la maison !) et notre plus grand rêve est de vivre une belle aventure pour notre voyage de noces. C'est pourquoi une participation à la cagnotte serait le plus beau des cadeaux pour nous aider à créer de merveilleux souvenirs",visibleForProfile: []  },
+        { question: "Peut-on offrir quelque chose en dehors de la cagnotte ?", answer: " Bien sûr ! Si vous préférez offrir un autre cadeau, cela nous touchera beaucoup.<br/> Cependant, nous avons déjà tout ce qu'il nous faut pour la maison (si ce n'est la maison !) et notre plus grand rêve est de vivre une belle aventure pour notre voyage de noces. C'est pourquoi une participation à la cagnotte serait le plus beau des cadeaux pour nous aider à créer de merveilleux souvenirs",visibleForProfile: []  },
         /*{ question: "Préférez-vous un cadeau ou une participation au voyage de noces ?", answer: "Nous laissons le choix à chacun selon ses envies.",visibleForProfile: []  },*/
       ]
     },

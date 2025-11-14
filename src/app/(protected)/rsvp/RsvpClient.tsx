@@ -154,7 +154,7 @@ export default function RsvpClient() {
           )}
 
           {/* Logement */}
-          {['All in','Marie','Temoin','ami'].includes(invite.profil) && (
+          {['All in','Marie','Témoin'].includes(invite.profil) && (
             <div className="mt-4">
               <h3 className="font-semibold mb-2 text-powderblue">Besoin de logement ?</h3>
               <span className="mr-2 font-medium text-powderblue">Nous privilégions les invités restant <b>du vendredi au dimanche</b> (80 €), mais s’il reste des disponibilités, un hébergement uniquement pour la nuit du samedi (50 €) pourra être proposé.</span>
@@ -173,7 +173,7 @@ export default function RsvpClient() {
           )}
 
           {/* Alerte logement */}
-          {(['demi_pension','cantine'].includes(invite.profil) || (['All in','Marie'].includes(invite.profil) && reponses[invite.id]?.logement === false)) && (
+          {(['demi_pension','cantine'].includes(invite.profil) || (['All in','Marie','Témoin'].includes(invite.profil) && reponses[invite.id]?.logement === false)) && (
             <div className="mt-4">
               <label className="block mt-3 flex items-center justify-between">
                 <span className="mr-2 font-medium text-powderblue">Je souhaite être averti s’il reste des logements pour le samedi soir</span>

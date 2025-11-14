@@ -36,9 +36,12 @@ export default function CagnottePage() {
           <p className="mb-6">
             Aidez-nous à réaliser nos rêves de voyage et de maison via <span className="font-bold">l’urne </span> mise à votre disposition le jour du mariage.<br />
           </p>
+          <p className="mb-6">
+            Si vous le souhaitez vous pouvez nous aidez à réaliser nos rêves de voyage et de maison via <span className="font-bold">l’urne </span> mise à votre disposition le jour du mariage.<br />
+          </p>
           <p>
-            Pour les malheureux absents (déjà bouh) ce RIB saura nous retrouver <br /> 
-            <span className="font-semibold">FR76 1451 8292 6707 1826 2704 117 </span>
+            Pour les malheureux absents (déjà bouh) ce RIB saura nous retrouver <br /> <br /> 
+            <span className="font-semibold">M FERRAND Guillaume Ou Mme PARISOT Alice <br />  FR76 1451 8292 6707 1826 2704 117 <br />  BIC FTNOFRP1XXX  <br />   </span>
           </p>
         </div>
 
