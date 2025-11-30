@@ -34,10 +34,10 @@ export default function CagnottePage() {
         {/* Colonne droite : texte */}
         <div className="flex flex-col justify-center text-center items-center w-1/2 text-gray-700 text-lg">
           <p className="mb-6">
-            Aidez-nous à réaliser nos rêves de voyage et de maison via <span className="font-bold">l’urne </span> mise à votre disposition le jour du mariage.<br />
+            Nous sommes heureux de partager avec vous cette magnifique journée et vous remercions surtout pour votre présence. <br />
           </p>
           <p className="mb-6">
-            Si vous le souhaitez vous pouvez nous aidez à réaliser nos rêves de voyage et de maison via <span className="font-bold">l’urne </span> mise à votre disposition le jour du mariage.<br />
+            Si vous souhaitez nous gâter encore plus, vous pouvez nous aidez à réaliser nos rêves de voyage et de maison via <span className="font-bold">l’urne </span> mise à votre disposition le jour du mariage.<br />
           </p>
           <p>
             Pour les malheureux absents (déjà bouh) ce RIB saura nous retrouver <br /> <br /> 

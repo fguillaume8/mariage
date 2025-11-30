@@ -15,7 +15,7 @@ interface Invite {
   alerte_logement: boolean | null
   participation_samedi: boolean | null
   participation_retour: boolean | null
-  message?: string | null
+  commentaire?: string | null
   mairie: boolean | null
 }
 
@@ -89,44 +89,24 @@ export default function RsvpClient() {
   )
 
 const handleSubmit = async () => {
-
-  // Sync local comments into reponses before sending
-    setReponses(prev => {
-      const newRep = { ...prev }
-      invites.forEach(invite => {
-        const card = document.getElementById(`comment-${invite.id}`) as HTMLTextAreaElement
-        if (card) {
-          newRep[invite.id].commentaire = card.value
-        }
-      })
-      return newRep
-    })
-  // Si un champ est en cours d'édition : on déclenche le blur + on réessaye submit après update du state
-const active = document.activeElement as HTMLElement | null;
-
-// 🔍 Si un champ du formulaire est encore focus → blur + retry auto
-if (active && (
-  active.tagName === "TEXTAREA" ||
-  active.tagName === "SELECT" ||
-  active.getAttribute("type") === "checkbox"
-)) {
-  active.blur();
-  setTimeout(() => handleSubmit(), 0);
-  return;
-}
+  console.log('🔍 État reponses avant submit:', reponses)
 
   setLoading(true)
 
+  console.log('📤 Données à envoyer:', reponses)
+
   const updates = Object.entries(reponses).map(([id, data]) => ({
     id,
-    participation_samedi: data.participation_Samedi,
-    participation_retour: data.participation_Retour,
+    participation_Samedi: data.participation_Samedi,
+    participation_Retour: data.participation_Retour,
     logement: data.logement,
     alerte_logement: data.alerte_logement,
     repas: data.repas,
-    message: data.commentaire,
+    commentaire: data.commentaire,
     mairie: data.mairie,
   }))
+
+  console.log('📦 Updates formatés:', updates)
 
   for (const update of updates) {
     await supabase.from('invites').update(update).eq('id', update.id)
@@ -186,7 +166,15 @@ if (active && (
 
       <div className="text-center">
         <button
-          onClick={handleSubmit}
+          id="submit-button"
+            onMouseDown={(e) => {
+            e.preventDefault()
+            // Forcer le blur de tous les champs
+            const active = document.activeElement as HTMLElement | null
+            if (active) active.blur()
+            // Lancer le submit après un court délai
+            setTimeout(() => handleSubmit(), 100)
+          }}
           className="bg-[#b68542] hover:bg-powderblue text-white font-semibold px-6 py-2 rounded-full mt-4 shadow-lg transition-all duration-300 hover:shadow-2xl"
         >
           Envoyer les réponses
@@ -223,8 +211,8 @@ if (active && (
   )
 }
 
-/** 🔽 Carte d’un invité : on garde TON JSX, mais on gère commentaire en local pour ne plus perdre le focus */
-const InviteCard = React.memo(function InviteCard({
+/** 🔽 Carte d&apos;un invité : on garde TON JSX, mais on gère commentaire en local pour ne plus perdre le focus */
+const InviteCard = function InviteCard({
   invite,
   rep,
   onChange,
@@ -243,12 +231,12 @@ const InviteCard = React.memo(function InviteCard({
   const isAllOut = profilNormalized === 'all out' || profilNormalized === 'all_out'
 
   // 🧠 Nouveau : état local pour le commentaire → plus de setReponses à chaque lettre
-  const [localComment, setLocalComment] = useState(rep.commentaire)
+const [localComment, setLocalComment] = useState(rep.commentaire)
+const commentRef = useRef(rep.commentaire)
 
-  // si rep.commentaire vient de Supabase ou est mis à jour, on resync
   useEffect(() => {
-    setLocalComment(rep.commentaire)
-  }, [rep.commentaire])
+    commentRef.current = localComment
+  }, [localComment])
 
   return (
     <div className="mb-6 p-4 rounded-xl bg-white border border-powderblue/20 shadow-inner transition-all duration-300">
@@ -302,11 +290,11 @@ const InviteCard = React.memo(function InviteCard({
       )}
 
       {/* Logement */}
-      {(isAllIn || isMarie || isTemoin) && (
+      {(isAllIn || isMarie || isTemoin ||isDemiPension || isCantine) && (
         <div className="mt-4">
           <h3 className="font-semibold mb-2 text-powderblue">Besoin de logement ?</h3>
           <span className="mr-2 font-medium text-powderblue">
-            Nous privilégions les invités restant <b>du vendredi au dimanche</b> (80 €), mais s’il reste des disponibilités, un hébergement uniquement pour la nuit du samedi (50 €) pourra être proposé.
+            Nous privilégions les invités restant <b>du vendredi au dimanche</b> (80 €), mais s&apos;il reste des disponibilités, un hébergement uniquement pour la nuit du samedi (50 €) pourra être proposé.
           </span>
           <label className="block mt-3 flex items-center justify-between">
             <span className="mr-2 font-medium text-powderblue">Souhaitez-vous un logement du vendredi au dimanche ?</span>
@@ -326,7 +314,10 @@ const InviteCard = React.memo(function InviteCard({
       {((isDemiPension || isCantine) || ((isAllIn || isMarie || isTemoin) && rep.logement === false)) && (
         <div className="mt-4">
           <label className="block mt-3 flex items-center justify-between">
-            <span className="mr-2 font-medium text-powderblue">Je souhaite être averti s’il reste des logements pour le samedi soir</span>
+            <span className="mr-2 font-medium text-powderblue">
+            Nous privilégions les invités restant <b>du vendredi au dimanche</b> (80 €), mais s&apos;il reste des disponibilités, un hébergement uniquement pour la nuit du samedi (50 €) pourra être proposé.
+            </span>
+            <span className="mr-2 font-medium text-powderblue">Je souhaite être averti s&apos;il reste des logements pour le samedi soir</span>
             <input
               type="checkbox"
               checked={!!rep.alerte_logement}
@@ -358,14 +349,15 @@ const InviteCard = React.memo(function InviteCard({
         <span className="font-medium text-powderblue">
           Une allergie, une préférence, ou simplement un petit mot pour nous ?<br />Dites-le ici !
         </span>
-        <textarea
-          id={`comment-${invite.id}`}   // 👈 Ajout important !
-          value={localComment}
-          onChange={(e) => setLocalComment(e.target.value)} // 👈 plus aucun setState global ici !
-          className="w-full mt-1 p-2 border border-powderblue/40 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#b68542]/50 bg-white/60"
-          rows={3}
-        />
+          <textarea
+            id={`comment-${invite.id}`}   
+            value={localComment}
+            onChange={(e) => setLocalComment(e.target.value)}
+            onBlur={(e) => onChange('commentaire', e.target.value)}
+            className="w-full mt-1 p-2 border border-powderblue/40 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#b68542]/50 bg-white/60"
+            rows={3}
+          />
       </label>
     </div>
   )
-})
+}
