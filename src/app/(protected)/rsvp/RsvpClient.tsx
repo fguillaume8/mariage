@@ -264,7 +264,7 @@ const commentRef = useRef(rep.commentaire)
 
   return (
     <div className="mb-6 p-4 rounded-xl bg-white border border-powderblue/20 shadow-inner transition-all duration-300">
-      <h2 className="font-semibold text-lg text-powderblue">{invite.prenom} {invite.nom}</h2>
+      <h2 className="font-semibold text-2xl text-powderblue">{invite.prenom} {invite.nom}</h2>
 
       {/* Samedi */}
       <label className="block mt-3 flex items-center justify-between">

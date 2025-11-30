@@ -104,7 +104,7 @@ useEffect(() => {
   }
 
   if (hasAnswered) {
-    return <div className="text-center text-xl mt-10">Merci pour ta participation 💖</div>
+    return <div className="text-center text-xl mt-10 text-powderblue">Merci pour ta participation 💖</div>
   }
 
   if (!currentUserId && !selectingPerson) return null
@@ -112,16 +112,16 @@ useEffect(() => {
   const question = questions[step]
 
   return (
-    <div className="flex flex-col items-center justify-center bg-[#f7f4eb] min-h-screen p-4" >
+    <div className="flex flex-col items-center text-powderblue justify-center bg-[#f7f4eb] min-h-[calc(100vh-57px)]" >
       {selectingPerson && (
-        <div className="flex flex-col items-center justify-center min-h-screen p-4 ">
-          <div className="text-center text-gray-700 text-lg space-y-2">
+        <div className="flex flex-col items-center justify-center min-h-[calc(100vh-57px)]">
+          <div className="text-center text-gray-700 text-lg space-y-2 ">
             <p>Les mariés n&apos;ont pas accès à ces questions avant le mariage </p>
             <p>Répondez en votre âme et conscience</p>
             <p className="mt-8">Seront-ils d&apos;accord avec vous le jour J ?</p>
             <p></p>
           </div>
-          <div className="bg-white w-full max-w-5xl p-8 rounded-2xl mt-10 shadow-lg text-center border border-gray-300">
+          <div className="bg-white w-full max-w-5xl p-8 text-powderblue rounded-2xl mt-10 shadow-lg text-center border border-gray-300">
             <h2 className="text-lg font-semibold mb-4">Qui répond au quiz ?</h2>
             {inviteNames.map((inv) => (
               <button
@@ -149,8 +149,8 @@ useEffect(() => {
             transition={{ duration: 0.3 }}
             className="text-center"
           >
-            <h1 className="text-2xl font-semibold mb-6">{question.question}</h1>
-            <div className="flex flex-col md:flex-row justify-center gap-4 md:gap-10">
+            <h1 className="text-2xl font-semibold mb-6 ">{question.question}</h1>
+            <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-10">
               <button onClick={() => handleVote('elle')} 
                       className="w-[250px] h-[250px] rounded overflow-hidden border-4 border-blue-500 hover:scale-105 transition">
                 <Image
