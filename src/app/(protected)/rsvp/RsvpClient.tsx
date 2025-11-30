@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useInvite } from '@/app/context/InviteContext'
 import { supabase } from '@/app/lib/supabaseClient'
+import { flushSync } from 'react-dom'
 import Image from 'next/image'
 
 interface Invite {
@@ -88,14 +89,25 @@ export default function RsvpClient() {
     []
   )
 
-const handleSubmit = async () => {
+const handleSubmit = async (textareaValue?: { id: string, value: string }) => {
   console.log('🔍 État reponses avant submit:', reponses)
 
   setLoading(true)
 
+    // Si on a une valeur de textarea, on l'utilise pour remplacer le commentaire
+  const finalReponses = textareaValue 
+    ? {
+        ...reponses,
+        [textareaValue.id]: {
+          ...reponses[textareaValue.id],
+          commentaire: textareaValue.value
+        }
+      }
+    : reponses
+
   console.log('📤 Données à envoyer:', reponses)
 
-  const updates = Object.entries(reponses).map(([id, data]) => ({
+  const updates = Object.entries(finalReponses).map(([id, data]) => ({
     id,
     participation_Samedi: data.participation_Samedi,
     participation_Retour: data.participation_Retour,
@@ -104,6 +116,7 @@ const handleSubmit = async () => {
     repas: data.repas,
     commentaire: data.commentaire,
     mairie: data.mairie,
+    updated_at: new Date().toISOString()
   }))
 
   console.log('📦 Updates formatés:', updates)
@@ -168,13 +181,24 @@ const handleSubmit = async () => {
         <button
           id="submit-button"
             onMouseDown={(e) => {
-            e.preventDefault()
-            // Forcer le blur de tous les champs
-            const active = document.activeElement as HTMLElement | null
-            if (active) active.blur()
-            // Lancer le submit après un court délai
-            setTimeout(() => handleSubmit(), 100)
-          }}
+                e.preventDefault()
+                // Forcer le blur de tous les champs
+                let textareaData: { id: string, value: string } | undefined
+                const active = document.activeElement as HTMLElement | null
+                  if (active && active.tagName === "TEXTAREA") {
+                  const textarea = active as HTMLTextAreaElement
+                  console.log('💬 Valeur du textarea au moment du clic:', textarea.value)
+                  
+                  // Extraire l'ID de l'invité depuis l'id du textarea
+                  const match = textarea.id.match(/comment-(.+)/)
+                  if (match) {
+                    textareaData = { id: match[1], value: textarea.value }
+                  }
+                }
+                if (active) active.blur()
+                // Le flushSync dans onBlur garantit que l'état est à jour, on peut envoyer immédiatement
+                setTimeout(() => handleSubmit(textareaData), 50)
+              }}
           className="bg-[#b68542] hover:bg-powderblue text-white font-semibold px-6 py-2 rounded-full mt-4 shadow-lg transition-all duration-300 hover:shadow-2xl"
         >
           Envoyer les réponses
@@ -311,12 +335,9 @@ const commentRef = useRef(rep.commentaire)
       )}
 
       {/* Alerte logement */}
-      {((isDemiPension || isCantine) || ((isAllIn || isMarie || isTemoin) && rep.logement === false)) && (
+      {(rep.logement === false) && (
         <div className="mt-4">
           <label className="block mt-3 flex items-center justify-between">
-            <span className="mr-2 font-medium text-powderblue">
-            Nous privilégions les invités restant <b>du vendredi au dimanche</b> (80 €), mais s&apos;il reste des disponibilités, un hébergement uniquement pour la nuit du samedi (50 €) pourra être proposé.
-            </span>
             <span className="mr-2 font-medium text-powderblue">Je souhaite être averti s&apos;il reste des logements pour le samedi soir</span>
             <input
               type="checkbox"
@@ -353,7 +374,12 @@ const commentRef = useRef(rep.commentaire)
             id={`comment-${invite.id}`}   
             value={localComment}
             onChange={(e) => setLocalComment(e.target.value)}
-            onBlur={(e) => onChange('commentaire', e.target.value)}
+            onBlur={(e) => {
+                // Utiliser flushSync pour forcer la mise à jour synchrone de l'état
+                flushSync(() => {
+                  onChange('commentaire', e.target.value)
+                })
+              }}
             className="w-full mt-1 p-2 border border-powderblue/40 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#b68542]/50 bg-white/60"
             rows={3}
           />
