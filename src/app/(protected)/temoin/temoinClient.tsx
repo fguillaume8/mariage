@@ -4,12 +4,6 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/app/lib/supabaseClient'
 
 
-/*interface Invite {
-  id: string
-  nom: string
-  prenom: string
-}*/
-
 interface Question {
   id_question: number
   question: string
@@ -20,6 +14,18 @@ interface Question {
   id_question: number
   reponse: 'elle' | 'lui'
 }*/
+
+interface ReponseAvecInvite {
+  id_invite: string
+  id_question: number
+  reponse: 'elle' | 'lui'
+  invites: {
+    id: string
+    nom: string
+    prenom: string
+    profil: string
+  }
+}
 
 interface Ligne {
   id: string
@@ -58,25 +64,29 @@ export default function PageTemoin() {
         return
       }
 
+      console.log("DEBUG REPONSES : ", JSON.stringify(reponsesData, null, 2))
+
       // 3. Filtrage des réponses par témoins uniquement
-      const filtres = reponsesData || []
+      const filtres = reponsesData || []  as ReponseAvecInvite[];
 
       // 4. Groupement par invité
       const mapLignes: Record<string, Ligne> = {}
 
-    filtres.forEach(r => {
-      const id = r.id_invite
-      if (!mapLignes[id]) {
-        const invite = r.invites[0] // <-- prendre le premier élément du tableau
-        mapLignes[id] = {
-          id,
-          nom: invite?.nom || '',    // fallback si undefined
-          prenom: invite?.prenom || '',
-          reponses: {},
+      filtres.forEach(r => {
+        const id = r.id_invite
+        const invite = r.invites;
+
+        if (!mapLignes[id]) {
+          mapLignes[id] = {
+            id,
+            nom: invite?.nom || '',
+            prenom: invite?.prenom || '',
+            reponses: {},
+          }
         }
-      }
-      mapLignes[id].reponses[r.id_question] = r.reponse
-    })
+        
+        mapLignes[id].reponses[r.id_question] = r.reponse
+      })
 
       setLignes(Object.values(mapLignes))
     }
