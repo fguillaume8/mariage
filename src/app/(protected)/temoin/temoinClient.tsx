@@ -67,7 +67,7 @@ export default function PageTemoin() {
       console.log("DEBUG REPONSES : ", JSON.stringify(reponsesData, null, 2))
 
       // 3. Filtrage des réponses par témoins uniquement
-      const filtres = reponsesData || []  as ReponseAvecInvite[];
+      const filtres = (reponsesData as unknown as ReponseAvecInvite[]) || [];
 
       // 4. Groupement par invité
       const mapLignes: Record<string, Ligne> = {}
