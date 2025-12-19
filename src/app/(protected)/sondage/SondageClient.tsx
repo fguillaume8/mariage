@@ -152,7 +152,7 @@ useEffect(() => {
             <h1 className="text-2xl font-semibold mb-6 ">{question.question}</h1>
             <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-10">
               <button onClick={() => handleVote('elle')} 
-                      className="w-[250px] h-[250px] rounded overflow-hidden border-4 border-blue-500 hover:scale-105 transition">
+                      className="w-[250px] h-[250px] rounded overflow-hidden border-4 border-ocre hover:scale-105 transition">
                 <Image
                   src={`/image/ElleLui/${question.image_elle}`}
                   alt="Elle"
@@ -162,7 +162,7 @@ useEffect(() => {
                 />
               </button>
               <button onClick={() => handleVote('lui')} 
-                      className="w-[250px] h-[250px] rounded overflow-hidden border-4 border-pink-500 hover:scale-105 transition">
+                      className="w-[250px] h-[250px] rounded overflow-hidden border-4 border-powderblue hover:scale-105 transition">
                 <Image
                   src={`/image/ElleLui/${question.image_lui}`}
                   alt="Lui"
