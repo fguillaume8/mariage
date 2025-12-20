@@ -19,7 +19,7 @@ export default function ElleOuLui() {
   const [step, setStep] = useState(0)
   const [questions, setQuestions] = useState<Question[]>([])
   const [hasAnswered, setHasAnswered] = useState(false)
-  const [selectingPerson, setSelectingPerson] = useState(true)
+  const [selectingPerson, setSelectingPerson] = useState(false)
   const [inviteNames, setInviteNames] = useState<{ id: string; nom: string; prenom: string }[]>([])
 
   useEffect(() => {
@@ -40,11 +40,13 @@ export default function ElleOuLui() {
 
       setInviteNames(invites)
 
-      if (invites.length > 1) {
-        setSelectingPerson(true)
-      } else {
-        setCurrentUserId(invites[0].id)
-      }
+if (invites.length > 1) {
+  setSelectingPerson(true)
+  setCurrentUserId('') // optionnel, pour être sûr
+} else {
+  setCurrentUserId(invites[0].id)
+  setSelectingPerson(false)
+}
     }
 
     init()
@@ -107,7 +109,8 @@ useEffect(() => {
     return <div className="text-center text-xl mt-10 text-powderblue">Merci pour ta participation 💖</div>
   }
 
-  if (!currentUserId && !selectingPerson) return null
+  if (!ids || ids.length === 0) return null
+if (!currentUserId && !selectingPerson) return <div>Chargement...</div>
 
   const question = questions[step]
 
@@ -138,7 +141,7 @@ useEffect(() => {
           </div>
         </div>
       )}
-
+{!selectingPerson && (
       <AnimatePresence mode="wait">
         {question && (
           <motion.div
@@ -175,6 +178,7 @@ useEffect(() => {
           </motion.div>
         )}
       </AnimatePresence>
+      )}
     </div>
   )
 }
