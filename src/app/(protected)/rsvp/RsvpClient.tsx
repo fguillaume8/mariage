@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useInvite } from '@/app/context/InviteContext'
 import { supabase } from '@/app/lib/supabaseClient'
 import { flushSync } from 'react-dom'
+import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 
 interface Invite {
@@ -35,6 +36,7 @@ export default function RsvpClient() {
   const [invites, setInvites] = useState<Invite[]>([])
   const [reponses, setReponses] = useState<Record<string, ReponseInvite>>({})
   const [loading, setLoading] = useState(false)
+  const router = useRouter()
   const [submitted, setSubmitted] = useState(false)
 
   const initDone = useRef(false) 
@@ -151,6 +153,15 @@ const handleSubmit = async (textareaValue?: { id: string, value: string }) => {
           Nous avons bien enregistré votre participation.<br />
           Hâte de vous retrouver pour célébrer ce moment avec nous !
         </p>
+
+        <p className="text-powderblue font-medium mb-6">
+          N&apos;hésitez pas à aller faire notre quiz pour voir si vous connaissez bien les mariés !
+        </p>
+            <button
+              onClick={() => router.push('/sondage')}
+              className="px-6 py-3 rounded-lg bg-powderblue text-white font-medium hover:bg-powderblue/80 transition"
+            >Accéder au quiz</button>
+
       </div>
     </div>
   )
@@ -318,7 +329,7 @@ const commentRef = useRef(rep.commentaire)
         <div className="mt-4">
           <h3 className="font-semibold mb-2 text-powderblue">Besoin de logement ?</h3>
           <span className="mr-2 font-medium text-powderblue">
-            Nous privilégions les invités restant <b>du vendredi au dimanche</b> (80 €), mais s&apos;il reste des disponibilités, un hébergement uniquement pour la nuit du samedi (50 €) pourra être proposé.
+            Nous privilégions les invités restant <b>du vendredi au dimanche</b> (80 €/p), mais s&apos;il reste des disponibilités, un hébergement uniquement pour la nuit du samedi (50 €) pourra être proposé.
           </span>
           <label className="block mt-3 flex items-center justify-between">
             <span className="mr-2 font-medium text-powderblue">Souhaitez-vous un logement du vendredi au dimanche ?</span>
