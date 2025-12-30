@@ -19,7 +19,8 @@ export default function ElleOuLui() {
   const [step, setStep] = useState(0)
   const [questions, setQuestions] = useState<Question[]>([])
   const [hasAnswered, setHasAnswered] = useState(false)
-  const [selectingPerson, setSelectingPerson] = useState(true)
+  const [showIntro, setShowIntro] = useState(false)
+  const [selectingPerson, setSelectingPerson] = useState(false)
   const [inviteNames, setInviteNames] = useState<{ id: string; nom: string; prenom: string }[]>([])
 
   useEffect(() => {
@@ -40,10 +41,14 @@ export default function ElleOuLui() {
 
       setInviteNames(invites)
 
+
       if (invites.length > 1) {
         setSelectingPerson(true)
+        setShowIntro(false)
       } else {
         setCurrentUserId(invites[0].id)
+        setSelectingPerson(false)
+        setShowIntro(true) 
       }
     }
 
@@ -83,9 +88,11 @@ useEffect(() => {
 
   fetchData()
 }, [currentUserId])
-
+  
   const handleVote = async (reponse: 'elle' | 'lui') => {
+    
     const question = questions[step]
+    
     if (!question || !currentUserId) return
 
     const { error } = await supabase.from('reponseellelui').insert({
@@ -107,8 +114,10 @@ useEffect(() => {
     return <div className="text-center text-xl mt-10 text-powderblue">Merci pour ta participation 💖</div>
   }
 
-  if (!currentUserId && !selectingPerson) return null
+  if (!ids || ids.length === 0) return null
+  if (!currentUserId && !selectingPerson) return <div>Chargement...</div>
 
+  const canStart = !selectingPerson && !showIntro
   const question = questions[step]
 
   return (
@@ -139,6 +148,30 @@ useEffect(() => {
         </div>
       )}
 
+      {showIntro && (
+        <div className="flex flex-col items-center justify-center min-h-[calc(100vh-57px)] text-center px-4">
+          <div className="max-w-xl bg-white p-8 rounded-2xl shadow-lg border border-gray-300 text-gray-700">
+            <h2 className="text-xl font-semibold mb-4 text-powderblue">
+              Le quiz « Elle ou Lui »
+            </h2>
+
+          <div className="text-center text-gray-700 text-lg space-y-2 ">
+            <p>Les mariés n&apos;ont pas accès à ces questions avant le mariage </p>
+            <p>Répondez en votre âme et conscience</p>
+            <p className="mt-8">Seront-ils d&apos;accord avec vous le jour J ?</p>
+            <p></p>
+          </div>
+
+            <button
+              onClick={() => setShowIntro(false)}
+              className="px-6 py-3 bg-powderblue text-white rounded-full font-semibold hover:bg-ocre transition"
+            >
+              Commencer le sondage
+            </button>
+          </div>
+        </div>
+      )}
+{canStart  && (
       <AnimatePresence mode="wait">
         {question && (
           <motion.div
@@ -175,6 +208,7 @@ useEffect(() => {
           </motion.div>
         )}
       </AnimatePresence>
+      )}
     </div>
   )
 }
