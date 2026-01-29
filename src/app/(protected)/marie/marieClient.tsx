@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { supabase } from '@/app/lib/supabaseClient';
-import { saveAs } from 'file-saver';
+import { useEffect, useState } from "react";
+import { supabase } from "@/app/lib/supabaseClient";
+import { saveAs } from "file-saver";
 
 interface Invite {
   id: string;
@@ -14,19 +14,23 @@ interface Invite {
   logement: boolean;
   commentaire?: string;
   groupe?: string;
+  updated_at?: string | null;
 }
 
 export default function ClientView() {
   const [invites, setInvites] = useState<Invite[] | null>(null);
-  const [filtreNom, setFiltreNom] = useState('');
-  const [filtreGroupe, setFiltreGroupe] = useState('');
+  const [filtreNom, setFiltreNom] = useState("");
+  const [filtreGroupe, setFiltreGroupe] = useState("");
   const [showStats, setShowStats] = useState(true);
   const [showNonRepondus, setShowNonRepondus] = useState(true);
   const [showTableau, setShowTableau] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data, error } = await supabase.from('invites').select('*');
+      const { data, error } = await supabase
+        .from("invites")
+        .select("*")
+        .order("updated_at", { ascending: false, nullsFirst: false });
       if (!error) setInvites(data as Invite[]);
     };
     fetchData();
@@ -34,11 +38,67 @@ export default function ClientView() {
 
   if (!invites) return <div className="p-6">Chargement...</div>;
 
-  const repondus = invites.filter(
-    (invite) =>
-      invite.participation_Samedi !== null ||
-      invite.participation_Retour !== null ||
-      invite.repas !== null
+  const isRepondu = (i: Invite) =>
+    i.participation_Samedi !== null ||
+    i.participation_Retour !== null ||
+    i.repas !== null ||
+    !!i.updated_at;
+
+  const repondus = invites.filter(isRepondu);
+  const nonRepondus = invites.filter((i) => !isRepondu(i));
+
+  const total = invites.length;
+  const totalRepondus = repondus.length;
+  const tauxReponse = total ? Math.round((totalRepondus / total) * 100) : 0;
+
+  const totalSamediOui = invites.filter(
+    (i) => i.participation_Samedi === true,
+  ).length;
+  const totalSamediNon = invites.filter(
+    (i) => i.participation_Samedi === false,
+  ).length;
+  const totalRetourOui = invites.filter(
+    (i) => i.participation_Retour === true,
+  ).length;
+  const totalRetourNon = invites.filter(
+    (i) => i.participation_Retour === false,
+  ).length;
+
+  const totalLogement = invites.filter((i) => i.logement).length;
+
+  // 🍽️ Répartition des repas
+  const repasCounts = repondus.reduce<Record<string, number>>((acc, i) => {
+    const key = (i.repas ?? "Non renseigné").trim();
+    acc[key] = (acc[key] ?? 0) + 1;
+    return acc;
+  }, {});
+  const repasSorted = Object.entries(repasCounts).sort((a, b) => b[1] - a[1]);
+
+  // 🕒 Dates de réponses
+  const datesReponse = repondus
+    .map((i) => i.updated_at)
+    .filter(Boolean)
+    .map((s) => new Date(s as string));
+
+  const firstResponse = datesReponse.length
+    ? new Date(Math.min(...datesReponse.map((d) => d.getTime())))
+    : null;
+
+  const lastResponse = datesReponse.length
+    ? new Date(Math.max(...datesReponse.map((d) => d.getTime())))
+    : null;
+
+  // 📈 Réponses par jour (simple)
+  const repliesPerDay = datesReponse.reduce<Record<string, number>>(
+    (acc, d) => {
+      const key = d.toISOString().slice(0, 10); // YYYY-MM-DD
+      acc[key] = (acc[key] ?? 0) + 1;
+      return acc;
+    },
+    {},
+  );
+  const repliesPerDaySorted = Object.entries(repliesPerDay).sort((a, b) =>
+    a[0].localeCompare(b[0]),
   );
 
   const invitesFiltres = repondus.filter((invite) => {
@@ -51,36 +111,24 @@ export default function ClientView() {
     return matchNom && matchGroupe;
   });
 
-  const nonRepondus = invites.filter(
-    (invite) =>
-      invite.participation_Samedi === null &&
-      invite.participation_Retour === null &&
-      invite.repas === null
-  );
-
-  const total = invites.length;
-  const totalSamedi = invites.filter((i) => i.participation_Samedi).length;
-  const totalRetour = invites.filter((i) => i.participation_Retour).length;
-  const totalLogement = invites.filter((i) => i.logement).length;
-
-  function exportCSV(data: Invite[], filename = 'export.csv') {
+  function exportCSV(data: Invite[], filename = "export.csv") {
     if (!data || data.length === 0) return;
 
-    const headers = Object.keys(data[0]).join(',');
+    const headers = Object.keys(data[0]).join(",");
     const rows = data
       .map((row) =>
         Object.values(row)
           .map((value) =>
-            typeof value === 'string' && value.includes(',')
+            typeof value === "string" && value.includes(",")
               ? `"${value.replace(/"/g, '""')}"`
-              : value
+              : value,
           )
-          .join(',')
+          .join(","),
       )
-      .join('\n');
+      .join("\n");
 
-    const csvContent = [headers, rows].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const csvContent = [headers, rows].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     saveAs(blob, filename);
   }
 
@@ -94,14 +142,74 @@ export default function ClientView() {
           onClick={() => setShowStats(!showStats)}
           className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400 mb-2"
         >
-          {showStats ? '▼ Masquer' : '▶️ Afficher'} les statistiques
+          {showStats ? "▼ Masquer" : "▶️ Afficher"} les statistiques
         </button>
         {showStats && (
-          <div className="bg-white p-4 rounded shadow text-sm">
-            <p><strong>🎉 Total invités :</strong> {total}</p>
-            <p><strong>✅ Présents samedi :</strong> {totalSamedi}</p>
-            <p><strong>🏁 Présents au retour :</strong> {totalRetour}</p>
-            <p><strong>🛏️ Besoin logement :</strong> {totalLogement}</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-white p-4 rounded shadow text-sm">
+              <p>
+                <strong>🎉 Total invités :</strong> {total}
+              </p>
+              <p>
+                <strong>📝 Réponses :</strong> {totalRepondus} / {total} (
+                {tauxReponse}%)
+              </p>
+              <hr className="my-2" />
+              <p>
+                <strong>✅ Samedi (oui/non) :</strong> {totalSamediOui} /{" "}
+                {totalSamediNon}
+              </p>
+              <p>
+                <strong>🏁 Retour (oui/non) :</strong> {totalRetourOui} /{" "}
+                {totalRetourNon}
+              </p>
+              <p>
+                <strong>🛏️ Besoin logement :</strong> {totalLogement}
+              </p>
+            </div>
+
+            <div className="bg-white p-4 rounded shadow text-sm">
+              <p className="font-semibold mb-2">🍽️ Répartition des repas</p>
+              <ul className="space-y-1">
+                {repasSorted.map(([repas, n]) => (
+                  <li key={repas} className="flex justify-between">
+                    <span>{repas}</span>
+                    <span className="font-medium">{n}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="bg-white p-4 rounded shadow text-sm">
+              <p className="font-semibold mb-2">🕒 Temporalité des réponses</p>
+              <p>
+                <strong>Première réponse :</strong>{" "}
+                {firstResponse ? firstResponse.toLocaleString("fr-FR") : "—"}
+              </p>
+              <p>
+                <strong>Dernière réponse :</strong>{" "}
+                {lastResponse ? lastResponse.toLocaleString("fr-FR") : "—"}
+              </p>
+
+              <hr className="my-2" />
+              <p className="font-semibold mb-2">📈 Réponses par jour</p>
+              <div className="max-h-32 overflow-auto border rounded p-2">
+                {repliesPerDaySorted.length ? (
+                  <ul className="space-y-1">
+                    {repliesPerDaySorted.map(([day, n]) => (
+                      <li key={day} className="flex justify-between">
+                        <span>{day}</span>
+                        <span className="font-medium">{n}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-gray-500">
+                    Pas de date de réponse enregistrée.
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
         )}
       </div>
@@ -112,14 +220,14 @@ export default function ClientView() {
           onClick={() => setShowNonRepondus(!showNonRepondus)}
           className="bg-yellow-300 px-4 py-2 rounded hover:bg-yellow-400 mb-2"
         >
-          {showNonRepondus ? '▼ Masquer' : '▶️ Afficher'} les non-répondants
+          {showNonRepondus ? "▼ Masquer" : "▶️ Afficher"} les non-répondants
         </button>
         {showNonRepondus && (
           <>
             {nonRepondus.length > 0 ? (
               <div>
                 <button
-                  onClick={() => exportCSV(nonRepondus, 'non_repondus.csv')}
+                  onClick={() => exportCSV(nonRepondus, "non_repondus.csv")}
                   className="mb-2 bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 text-sm"
                 >
                   📤 Exporter les non-répondants
@@ -129,7 +237,6 @@ export default function ClientView() {
                     <tr>
                       <th className="border p-2 text-left">Prénom</th>
                       <th className="border p-2 text-left">Nom</th>
-                      <th className="border p-2 text-left">Groupe</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -137,14 +244,15 @@ export default function ClientView() {
                       <tr key={invite.id}>
                         <td className="border p-2">{invite.prenom}</td>
                         <td className="border p-2">{invite.nom}</td>
-                        <td className="border p-2">{invite.groupe || ''}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
             ) : (
-              <p className="text-green-600">Tous les invités ont répondu ! 🎉</p>
+              <p className="text-green-600">
+                Tous les invités ont répondu ! 🎉
+              </p>
             )}
           </>
         )}
@@ -156,7 +264,7 @@ export default function ClientView() {
           onClick={() => setShowTableau(!showTableau)}
           className="bg-pink-200 px-4 py-2 rounded hover:bg-pink-300 mb-2"
         >
-          {showTableau ? '▼ Masquer' : '▶️ Afficher'} le tableau des réponses
+          {showTableau ? "▼ Masquer" : "▶️ Afficher"} le tableau des réponses
         </button>
         {showTableau && (
           <>
@@ -168,15 +276,11 @@ export default function ClientView() {
                 value={filtreNom}
                 onChange={(e) => setFiltreNom(e.target.value)}
               />
-              <input
-                type="text"
-                placeholder="🔍 Filtrer par groupe"
-                className="p-2 border rounded w-full sm:w-1/3"
-                value={filtreGroupe}
-                onChange={(e) => setFiltreGroupe(e.target.value)}
-              />
+
               <button
-                onClick={() => exportCSV(invitesFiltres, 'reponses_filtrees.csv')}
+                onClick={() =>
+                  exportCSV(invitesFiltres, "reponses_filtrees.csv")
+                }
                 className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
               >
                 📤 Exporter les réponses
@@ -191,24 +295,40 @@ export default function ClientView() {
                   <th className="px-4 py-2">Retour</th>
                   <th className="px-4 py-2">Repas</th>
                   <th className="px-4 py-2">Logement</th>
+                  <th className="px-4 py-2">Répondu le</th>
                   <th className="px-4 py-2">Message</th>
-                  <th className="px-4 py-2">Groupe</th>
                 </tr>
               </thead>
               <tbody>
                 {invitesFiltres.map((invite) => (
                   <tr key={invite.id} className="border-t">
-                    <td className="px-4 py-2">{invite.prenom} {invite.nom}</td>
                     <td className="px-4 py-2">
-                      {invite.participation_Samedi === null ? '❓' : invite.participation_Samedi ? '✅' : '❌'}
+                      {invite.prenom} {invite.nom}
                     </td>
                     <td className="px-4 py-2">
-                      {invite.participation_Retour === null ? '❓' : invite.participation_Retour ? '✅' : '❌'}
+                      {invite.participation_Samedi === null
+                        ? "❓"
+                        : invite.participation_Samedi
+                          ? "✅"
+                          : "❌"}
                     </td>
-                    <td className="px-4 py-2">{invite.repas || '—'}</td>
-                    <td className="px-4 py-2">{invite.logement ? '🛏️' : '—'}</td>
-                    <td className="px-4 py-2">{invite.commentaire || '—'}</td>
-                    <td className="px-4 py-2">{invite.groupe || ''}</td>
+                    <td className="px-4 py-2">
+                      {invite.participation_Retour === null
+                        ? "❓"
+                        : invite.participation_Retour
+                          ? "✅"
+                          : "❌"}
+                    </td>
+                    <td className="px-4 py-2">{invite.repas || "—"}</td>
+                    <td className="px-4 py-2">
+                      {invite.logement ? "🛏️" : "—"}
+                    </td>
+                    <td className="px-4 py-2">
+                      {invite.updated_at
+                        ? new Date(invite.updated_at).toLocaleString("fr-FR")
+                        : "—"}
+                    </td>
+                    <td className="px-4 py-2">{invite.commentaire || "—"}</td>
                   </tr>
                 ))}
               </tbody>
