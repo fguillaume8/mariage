@@ -12,17 +12,24 @@ interface Invite {
   participation_Retour: boolean | null;
   repas: string | null;
   logement: boolean;
+  alerte_logement : boolean;
   commentaire?: string;
-  groupe?: string;
+  profil?: string;
 }
 
 export default function ClientView() {
   const [invites, setInvites] = useState<Invite[] | null>(null);
   const [filtreNom, setFiltreNom] = useState('');
-  const [filtreGroupe, setFiltreGroupe] = useState('');
+  const [filtreProfil, setFiltreProfil] = useState('');
   const [showStats, setShowStats] = useState(true);
   const [showNonRepondus, setShowNonRepondus] = useState(true);
   const [showTableau, setShowTableau] = useState(true);
+
+  const [filtreSamedi, setFiltreSamedi] = useState('tous');
+  const [filtreRetour, setFiltreRetour] = useState('tous');
+  const [filtreLogement, setFiltreLogement] = useState('tous');
+  const [filtreRepas, setFiltreRepas] = useState('tous');
+  const [filtreAlerte, setFiltreAlerte] = useState('tous');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -42,13 +49,33 @@ export default function ClientView() {
   );
 
   const invitesFiltres = repondus.filter((invite) => {
-    const matchNom = `${invite.prenom} ${invite.nom}`
-      .toLowerCase()
-      .includes(filtreNom.toLowerCase());
-    const matchGroupe = filtreGroupe
-      ? invite.groupe?.toLowerCase().includes(filtreGroupe.toLowerCase())
-      : true;
-    return matchNom && matchGroupe;
+    // 1. Filtre texte (Nom et Groupe)
+    const matchNom = `${invite.prenom} ${invite.nom}`.toLowerCase().includes(filtreNom.toLowerCase());
+    const matchProfil = invite.profil?.toLowerCase().includes(filtreProfil.toLowerCase()) ?? true;
+    
+    // 2. Filtres Booléens (Samedi, Retour, Logement)
+    // On compare la valeur sélectionnée avec la valeur réelle ou sa conversion en string
+    const matchSamedi = filtreSamedi === 'tous' 
+      ? true 
+      : String(invite.participation_Samedi) === filtreSamedi;
+
+    const matchRetour = filtreRetour === 'tous' 
+      ? true 
+      : String(invite.participation_Retour) === filtreRetour;
+
+    const matchRepas = filtreRepas === 'tous' 
+      ? true 
+      : invite.repas === filtreRepas;
+
+    const matchLogement = filtreLogement === 'tous' 
+      ? true 
+      : String(invite.logement) === filtreLogement;
+
+    const matchAlerte = filtreAlerte === 'tous' 
+      ? true 
+      : String(invite.alerte_logement) === filtreAlerte;
+
+    return matchNom && matchProfil && matchSamedi && matchRetour && matchLogement && matchRepas && matchAlerte;
   });
 
   const nonRepondus = invites.filter(
@@ -62,6 +89,7 @@ export default function ClientView() {
   const totalSamedi = invites.filter((i) => i.participation_Samedi).length;
   const totalRetour = invites.filter((i) => i.participation_Retour).length;
   const totalLogement = invites.filter((i) => i.logement).length;
+  const totaltAlerteLogement = invites.filter((i) => i.alerte_logement).length;
 
   function exportCSV(data: Invite[], filename = 'export.csv') {
     if (!data || data.length === 0) return;
@@ -101,7 +129,8 @@ export default function ClientView() {
             <p><strong>🎉 Total invités :</strong> {total}</p>
             <p><strong>✅ Présents samedi :</strong> {totalSamedi}</p>
             <p><strong>🏁 Présents au retour :</strong> {totalRetour}</p>
-            <p><strong>🛏️ Besoin logement :</strong> {totalLogement}</p>
+            <p><strong>🛏️✅ Validé logement :</strong> {totalLogement}</p>
+            <p><strong>🛏️❓ Alerte logement :</strong> {totaltAlerteLogement}</p>
           </div>
         )}
       </div>
@@ -129,7 +158,7 @@ export default function ClientView() {
                     <tr>
                       <th className="border p-2 text-left">Prénom</th>
                       <th className="border p-2 text-left">Nom</th>
-                      <th className="border p-2 text-left">Groupe</th>
+                      <th className="border p-2 text-left">Profil</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -137,7 +166,7 @@ export default function ClientView() {
                       <tr key={invite.id}>
                         <td className="border p-2">{invite.prenom}</td>
                         <td className="border p-2">{invite.nom}</td>
-                        <td className="border p-2">{invite.groupe || ''}</td>
+                        <td className="border p-2">{invite.profil || ''}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -170,10 +199,10 @@ export default function ClientView() {
               />
               <input
                 type="text"
-                placeholder="🔍 Filtrer par groupe"
+                placeholder="🔍 Filtrer par profil"
                 className="p-2 border rounded w-full sm:w-1/3"
-                value={filtreGroupe}
-                onChange={(e) => setFiltreGroupe(e.target.value)}
+                value={filtreProfil}
+                onChange={(e) => setFiltreProfil(e.target.value)}
               />
               <button
                 onClick={() => exportCSV(invitesFiltres, 'reponses_filtrees.csv')}
@@ -187,12 +216,69 @@ export default function ClientView() {
               <thead className="bg-pink-100 text-left">
                 <tr>
                   <th className="px-4 py-2">Nom</th>
-                  <th className="px-4 py-2">Samedi</th>
-                  <th className="px-4 py-2">Retour</th>
-                  <th className="px-4 py-2">Repas</th>
-                  <th className="px-4 py-2">Logement</th>
+                  <th className="px-4 py-3 border-b">
+                    <span className="block mb-1 text-pink-800">Samedi</span>
+                    <select 
+                      className="w-full p-1 font-normal border rounded text-xs"
+                      value={filtreSamedi}
+                      onChange={(e) => setFiltreSamedi(e.target.value)}
+                    >
+                      <option value="tous">Tous</option>
+                      <option value="true">✅ Oui</option>
+                      <option value="false">❌ Non</option>
+                      <option value="null">❓ ?</option>
+                    </select>
+                  </th>
+                  <th className="px-4 py-3 border-b">
+                    <span className="block mb-1 text-pink-800">Retour</span>
+                    <select 
+                      className="w-full p-1 font-normal border rounded text-xs"
+                      value={filtreRetour}
+                      onChange={(e) => setFiltreRetour(e.target.value)}
+                    >
+                      <option value="tous">Tous</option>
+                      <option value="true">✅ Oui</option>
+                      <option value="false">❌ Non</option>
+                    </select>
+                  </th>
+                  <th className="px-4 py-3 border-b">
+                    <span className="block mb-1 text-pink-800">Repas</span>
+                    <select 
+                      className="w-full p-1 font-normal border rounded text-xs"
+                      value={filtreRepas}
+                      onChange={(e) => setFiltreRepas(e.target.value)}
+                    >
+                      <option value="tous">Tous</option>
+                      <option value="viande">viande</option>
+                      <option value="vegetarien">vegetarien</option>
+                    </select>
+                  </th>
+                  <th className="px-4 py-3 border-b">
+                    <span className="block mb-1 text-pink-800">Logement</span>
+                    <select 
+                      className="w-full p-1 font-normal border rounded text-xs"
+                      value={filtreLogement}
+                      onChange={(e) => setFiltreLogement(e.target.value)}
+                    >
+                      <option value="tous">Tous</option>
+                      <option value="true">🛏️ Oui</option>
+                      <option value="false">Non</option>
+                    </select>
+                  </th>
+                  <th className="px-4 py-3 border-b">
+                    <span className="block mb-1 text-pink-800">Alerte logement</span>
+                    <select 
+                      className="w-full p-1 font-normal border rounded text-xs"
+                      value={filtreAlerte}
+                      onChange={(e) => setFiltreAlerte(e.target.value)}
+                    >
+                      <option value="tous">Tous</option>
+                      <option value="true">✅ Oui</option>
+                      <option value="false">❌ Non</option>
+                    </select>
+                  </th>
                   <th className="px-4 py-2">Message</th>
-                  <th className="px-4 py-2">Groupe</th>
+                  <th className="px-4 py-2">Profil</th>
                 </tr>
               </thead>
               <tbody>
@@ -207,8 +293,9 @@ export default function ClientView() {
                     </td>
                     <td className="px-4 py-2">{invite.repas || '—'}</td>
                     <td className="px-4 py-2">{invite.logement ? '🛏️' : '—'}</td>
+                    <td className="px-4 py-2">{invite.alerte_logement ? '❓' : '—'}</td>
                     <td className="px-4 py-2">{invite.commentaire || '—'}</td>
-                    <td className="px-4 py-2">{invite.groupe || ''}</td>
+                    <td className="px-4 py-2">{invite.profil || ''}</td>
                   </tr>
                 ))}
               </tbody>
