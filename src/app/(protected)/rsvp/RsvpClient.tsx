@@ -346,7 +346,7 @@ const commentRef = useRef(rep.commentaire)
       )}
 
       {/* Alerte logement */}
-      {(rep.logement === false) && (
+      {(rep.logement === false) && (isAllIn || isMarie || isTemoin ||isDemiPension || isCantine) && (
         <div className="mt-4">
           <label className="block mt-3 flex items-center justify-between">
             <span className="mr-2 font-medium text-powderblue">Je souhaite être averti s&apos;il reste des logements pour le samedi soir</span>
