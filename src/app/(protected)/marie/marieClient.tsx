@@ -15,6 +15,8 @@ interface Invite {
   alerte_logement : boolean;
   commentaire?: string;
   profil?: string;
+  updated_at: string;
+  mairie?: boolean;
 }
 
 export default function ClientView() {
@@ -30,6 +32,11 @@ export default function ClientView() {
   const [filtreLogement, setFiltreLogement] = useState('tous');
   const [filtreRepas, setFiltreRepas] = useState('tous');
   const [filtreAlerte, setFiltreAlerte] = useState('tous');
+  const [filtreUpdated, setFiltreUpdated] = useState('tous');
+  const [filtreMairie, setFiltreMairie] = useState('tous');
+
+  // 'asc' pour croissant, 'desc' pour décroissant, null pour aucun tri
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,35 +55,39 @@ export default function ClientView() {
       invite.repas !== null
   );
 
-  const invitesFiltres = repondus.filter((invite) => {
-    // 1. Filtre texte (Nom et Groupe)
-    const matchNom = `${invite.prenom} ${invite.nom}`.toLowerCase().includes(filtreNom.toLowerCase());
-    const matchProfil = invite.profil?.toLowerCase().includes(filtreProfil.toLowerCase()) ?? true;
-    
-    // 2. Filtres Booléens (Samedi, Retour, Logement)
-    // On compare la valeur sélectionnée avec la valeur réelle ou sa conversion en string
-    const matchSamedi = filtreSamedi === 'tous' 
-      ? true 
-      : String(invite.participation_Samedi) === filtreSamedi;
 
-    const matchRetour = filtreRetour === 'tous' 
-      ? true 
-      : String(invite.participation_Retour) === filtreRetour;
 
-    const matchRepas = filtreRepas === 'tous' 
-      ? true 
-      : invite.repas === filtreRepas;
+// 1. On filtre d'abord
+const filtered = repondus.filter((invite) => {
+  const matchNom = `${invite.prenom} ${invite.nom}`.toLowerCase().includes(filtreNom.toLowerCase());
+  const matchProfil = invite.profil?.toLowerCase().includes(filtreProfil.toLowerCase()) ?? true;
+  
+  const matchSamedi = filtreSamedi === 'tous' ? true : String(invite.participation_Samedi) === filtreSamedi;
+  const matchRetour = filtreRetour === 'tous' ? true : String(invite.participation_Retour) === filtreRetour;
+  const matchRepas = filtreRepas === 'tous' ? true : invite.repas === filtreRepas;
+  const matchLogement = filtreLogement === 'tous' ? true : String(invite.logement) === filtreLogement;
+  const matchAlerte = filtreAlerte === 'tous' ? true : String(invite.alerte_logement) === filtreAlerte; 
+  const matchMairie = filtreMairie === 'tous' ? true : String(invite.mairie) === filtreMairie;
 
-    const matchLogement = filtreLogement === 'tous' 
-      ? true 
-      : String(invite.logement) === filtreLogement;
 
-    const matchAlerte = filtreAlerte === 'tous' 
-      ? true 
-      : String(invite.alerte_logement) === filtreAlerte;
+  const matchUpdated = filtreUpdated === 'tous'
+    ? true
+    : (filtreUpdated === 'recent' 
+        ? new Date(invite.updated_at) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) 
+        : new Date(invite.updated_at) <= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000));
 
-    return matchNom && matchProfil && matchSamedi && matchRetour && matchLogement && matchRepas && matchAlerte;
-  });
+  return matchNom && matchProfil && matchSamedi && matchRetour && matchLogement && matchRepas && matchAlerte && matchMairie && matchUpdated;
+});
+
+// 2. On trie ensuite (on garde le nom 'invitesFiltres' pour ne pas casser ton JSX plus bas)
+const invitesFiltres = [...filtered].sort((a, b) => {
+  if (!sortOrder) return 0;
+  
+  const dateA = new Date(a.updated_at).getTime();
+  const dateB = new Date(b.updated_at).getTime();
+
+  return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+});
 
   const nonRepondus = invites.filter(
     (invite) =>
@@ -86,10 +97,49 @@ export default function ClientView() {
   );
 
   const total = invites.length;
+  const totalRepondus = repondus.length;
+  const tauxReponse = total ? Math.round((totalRepondus / total) * 100) : 0;
   const totalSamedi = invites.filter((i) => i.participation_Samedi).length;
   const totalRetour = invites.filter((i) => i.participation_Retour).length;
   const totalLogement = invites.filter((i) => i.logement).length;
   const totaltAlerteLogement = invites.filter((i) => i.alerte_logement).length;
+  const totalMairie = invites.filter((i) => i.mairie).length;
+
+
+  // 🍽️ Répartition des repas
+  const repasCounts = repondus.reduce<Record<string, number>>((acc, i) => {
+    const key = (i.repas ?? "Non renseigné").trim();
+    acc[key] = (acc[key] ?? 0) + 1;
+    return acc;
+  }, {});
+  const repasSorted = Object.entries(repasCounts).sort((a, b) => b[1] - a[1]);
+
+  // 🕒 Dates de réponses
+  const datesReponse = repondus
+    .map((i) => i.updated_at)
+    .filter(Boolean)
+    .map((s) => new Date(s as string));
+
+  const firstResponse = datesReponse.length
+    ? new Date(Math.min(...datesReponse.map((d) => d.getTime())))
+    : null;
+
+  const lastResponse = datesReponse.length
+    ? new Date(Math.max(...datesReponse.map((d) => d.getTime())))
+    : null;
+
+  // 📈 Réponses par jour (simple)
+  const repliesPerDay = datesReponse.reduce<Record<string, number>>(
+    (acc, d) => {
+      const key = d.toISOString().slice(0, 10); // YYYY-MM-DD
+      acc[key] = (acc[key] ?? 0) + 1;
+      return acc;
+    },
+    {},
+  );
+  const repliesPerDaySorted = Object.entries(repliesPerDay).sort((a, b) =>
+    a[0].localeCompare(b[0]),
+  );
 
   function exportCSV(data: Invite[], filename = 'export.csv') {
     if (!data || data.length === 0) return;
@@ -125,13 +175,62 @@ export default function ClientView() {
           {showStats ? '▼ Masquer' : '▶️ Afficher'} les statistiques
         </button>
         {showStats && (
-          <div className="bg-white p-4 rounded shadow text-sm">
-            <p><strong>🎉 Total invités :</strong> {total}</p>
-            <p><strong>✅ Présents samedi :</strong> {totalSamedi}</p>
-            <p><strong>🏁 Présents au retour :</strong> {totalRetour}</p>
-            <p><strong>🛏️✅ Validé logement :</strong> {totalLogement}</p>
-            <p><strong>🛏️❓ Alerte logement :</strong> {totaltAlerteLogement}</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-white p-4 rounded shadow text-sm">
+              <p><strong>🎉 Total invités :</strong> {total}</p>
+              <p><strong>📝 Réponses :</strong> {totalRepondus} / {total} ({tauxReponse}%)</p>
+              <p><strong>✅ Présents samedi :</strong> {totalSamedi}</p>
+              <p><strong>🏁 Présents au retour :</strong> {totalRetour}</p>
+              <p><strong>🛏️✅ Validé logement :</strong> {totalLogement}</p>
+              <p><strong>🛏️❓ Alerte logement :</strong> {totaltAlerteLogement}</p>
+              <p><strong>🏛️ Mairie :</strong> {totalMairie}</p>
+            </div>
+
+            <div className="bg-white p-4 rounded shadow text-sm">
+              <p className="font-semibold mb-2">🍽️ Répartition des repas</p>
+              <ul className="space-y-1">
+                {repasSorted.map(([repas, n]) => (
+                  <li key={repas} className="flex justify-between">
+                    <span>{repas}</span>
+                    <span className="font-medium">{n}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+                        <div className="bg-white p-4 rounded shadow text-sm">
+              <p className="font-semibold mb-2">🕒 Temporalité des réponses</p>
+              <p>
+                <strong>Première réponse :</strong>{" "}
+                {firstResponse ? firstResponse.toLocaleString("fr-FR") : "—"}
+              </p>
+              <p>
+                <strong>Dernière réponse :</strong>{" "}
+                {lastResponse ? lastResponse.toLocaleString("fr-FR") : "—"}
+              </p>
+
+              <hr className="my-2" />
+              <p className="font-semibold mb-2">📈 Réponses par jour</p>
+              <div className="max-h-32 overflow-auto border rounded p-2">
+                {repliesPerDaySorted.length ? (
+                  <ul className="space-y-1">
+                    {repliesPerDaySorted.map(([day, n]) => (
+                      <li key={day} className="flex justify-between">
+                        <span>{day}</span>
+                        <span className="font-medium">{n}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-gray-500">
+                    Pas de date de réponse enregistrée.
+                  </p>
+                )}
+              </div>
+            </div>
+            
+
           </div>
+
         )}
       </div>
 
@@ -277,8 +376,38 @@ export default function ClientView() {
                       <option value="false">❌ Non</option>
                     </select>
                   </th>
+                                    <th className="px-4 py-3 border-b">
+                    <span className="block mb-1 text-pink-800">Mairie</span>
+                    <select 
+                      className="w-full p-1 font-normal border rounded text-xs"
+                      value={filtreMairie}
+                      onChange={(e) => setFiltreMairie(e.target.value)}
+                    >
+                      <option value="tous">Tous</option>
+                      <option value="true">✅ Oui</option>
+                      <option value="false">❌ Non</option>
+                    </select>
+                  </th>
                   <th className="px-4 py-2">Message</th>
                   <th className="px-4 py-2">Profil</th>
+                  <th 
+                      className="px-4 py-3 border-b cursor-pointer hover:bg-pink-200 transition-colors group"
+                      onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                      title="Cliquer pour trier par date"
+                    >
+                    <span className="block mb-1 text-pink-800">Répondu</span>
+                    <span className="text-xs">{sortOrder === 'asc' ? '🔼' : sortOrder === 'desc' ? '🔽' : '↕️'}</span>
+                    <select 
+                      className="w-full p-1 font-normal border rounded text-xs"
+                      value={filtreUpdated}
+                      onChange={(e) => setFiltreUpdated(e.target.value)}
+                      onClick={(e) => e.stopPropagation()} // Important : évite de trier quand on change le filtre
+                    >
+                      <option value="tous">Tous</option>
+                      <option value="recent">Récent (7 jours)</option>
+                      <option value="ancien">Ancien</option>
+                    </select>
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -294,8 +423,10 @@ export default function ClientView() {
                     <td className="px-4 py-2">{invite.repas || '—'}</td>
                     <td className="px-4 py-2">{invite.logement ? '🛏️' : '—'}</td>
                     <td className="px-4 py-2">{invite.alerte_logement ? '❓' : '—'}</td>
+                    <td className="px-4 py-2">{invite.mairie ? '🏛️' : '—'}</td>
                     <td className="px-4 py-2">{invite.commentaire || '—'}</td>
                     <td className="px-4 py-2">{invite.profil || ''}</td>
+                    <td className="px-4 py-2">{invite.updated_at ? new Date(invite.updated_at).toLocaleDateString() : ''}</td>
                   </tr>
                 ))}
               </tbody>
